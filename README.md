@@ -72,6 +72,26 @@ The output is written to `dist/`. To preview the production build locally:
 yarn preview
 ```
 
+### Base path configuration (for GitHub Pages and other subpaths)
+
+This project reads the base path from the environment during build:
+
+- Preferred: `VITE_BASE` (e.g., `/floatlab-ui/`)
+- Fallback: `BASE`
+- Default: `/`
+
+Examples:
+
+```
+# Regular build (serves from root '/')
+yarn build
+
+# Build for GitHub Pages under https://<org>.github.io/floatlab-ui/
+VITE_BASE=/floatlab-ui/ yarn build
+```
+
+The included GitHub Actions workflow sets `VITE_BASE=/floatlab-ui/` automatically when deploying to Pages.
+
 ## Code style & formatting
 
 Prettier is included. You can format the code with your IDE or from the CLI:
