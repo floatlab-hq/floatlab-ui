@@ -47,9 +47,9 @@ export function mockNodes() {
     genNode("alpha-2.floatlab.cloud", ["tunnel", "backup"]),
   ]);
 
-  function restart(uuid: string): void {}
+  function restart(_uuid: string): void {}
 
-  function maintenence(uuid: string): void {}
+  function maintenence(_uuid: string): void {}
 
   function stop(): void {}
 

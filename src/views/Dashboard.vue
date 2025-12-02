@@ -236,20 +236,38 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, type Ref } from "vue";
 import ResourceBlocks from "../components/ResourceBlocks.vue";
 import { FLNode, FLNodeStatus } from "../api/types.ts"; // Import custom component
 
 // --- Data Setup (Mocking the image data) ---
 
-const { nodes } = inject<{ nodes: Ref<FLNode[]> }>("nodes");
+const injected = inject<{ nodes: Ref<FLNode[]> }>("nodes");
+const nodes: Ref<FLNode[]> = injected?.nodes ?? ref<FLNode[]>([]);
+
+function statusToString(s: FLNodeStatus): string {
+  switch (s) {
+    case FLNodeStatus.ONLINE:
+      return "online";
+    case FLNodeStatus.OFFLINE:
+      return "offline";
+    case FLNodeStatus.UNREACHABLE:
+      return "unreachable";
+    case FLNodeStatus.REBOOTING:
+      return "rebooting";
+    case FLNodeStatus.MAINTENANCE:
+      return "maintenance";
+    default:
+      return "unknown";
+  }
+}
 
 const nodesData = computed(() =>
-  nodes.value.map((n: FLNode, idx) => ({
+  nodes.value.map((n: FLNode, idx: number) => ({
     id: idx + 1,
     name: n.name,
     state: n.state,
-    status: FLNodeStatus[n.state],
+    status: statusToString(n.state),
     uptime: "12h",
     cpuLabel: `${n.info.bigCores}C ${n.info.cpuThreads}T`,
     cpuUsage: 4, // roughly 50% active blocks
@@ -315,7 +333,7 @@ const appsData = ref([
 // --- Logic ---
 
 // Helper to map status strings to PrimeVue severities
-const getStatusSeverity = (status) => {
+const getStatusSeverity = (status: string) => {
   switch (status.toLowerCase()) {
     case "online":
       return "success";
@@ -337,7 +355,7 @@ const menuItems = ref([
   { label: "Delete", icon: "pi pi-fw pi-trash", class: "text-red-400" },
 ]);
 
-const toggleMenu = (event) => {
+const toggleMenu = (event: MouseEvent) => {
   menu.value.toggle(event);
 };
 </script>
