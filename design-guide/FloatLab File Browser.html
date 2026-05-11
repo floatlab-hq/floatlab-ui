@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FloatLab — File Browser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-void:    rgb(9,15,17);
+    --bg-base:    rgb(19,28,27);
+    --bg-panel:   rgb(13,26,27);
+    --bg-elevated:rgb(20,49,44);
+    --bg-hover:   rgb(28,56,50);
+    --bg-selected:rgb(32,64,56);
+
+    --border-subtle:  rgb(19,28,27);
+    --border-default: rgb(40,75,59);
+    --border-strong:  rgb(56,96,76);
+    --border-focus:   rgb(73,212,155);
+
+    --green-100: rgb(212,249,235);
+    --green-300: rgb(113,228,182);
+    --green-400: rgb(73,212,155);
+    --green-500: rgb(40,160,115);
+    --green-600: rgb(20,100,72);
+    --green-700: rgb(10,60,44);
+    --green-glow: rgba(12,245,149,0.3);
+
+    --red-300: rgb(240,160,175);
+    --red-400: rgb(226,92,117);
+    --red-600: rgb(123,0,23);
+
+    --amber-300: rgb(255,180,140);
+    --amber-400: rgb(245,93,60);
+    --amber-600: rgb(140,32,12);
+
+    --cyan-300: rgb(136,221,245);
+    --cyan-400: rgb(58,184,240);
+    --cyan-600: rgb(13,94,130);
+
+    --text-primary:   rgb(255,255,255);
+    --text-secondary: rgb(240,240,240);
+    --text-dim:       rgba(240,240,240,0.45);
+    --text-muted:     rgb(86,124,108);
+    --text-disabled:  rgb(40,48,50);
+    --text-inverse:   rgb(9,15,17);
+
+    --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
+    --font-brand: 'Manrope', sans-serif;
+
+    --r-sm: 2px;
+    --r-md: 4px;
+    --r-lg: 6px;
+
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(56,96,76,0.4);
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 80ms;
+    --dur-mid:  160ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 13px; }
+  body {
+    background:
+      radial-gradient(ellipse at 30% 10%, rgba(73,212,155,0.05), transparent 60%),
+      var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 32px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(73,212,155,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(73,212,155,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stage-label {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    z-index: 5;
+  }
+  .stage-label::before {
+    content: "▸ ";
+    color: var(--green-400);
+  }
+
+  /* ───────────────────────── MODAL SHELL ───────────────────────── */
+  .fb-modal {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1080px;
+    height: 720px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── modal header ── */
+  .fb-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-default);
+    background: linear-gradient(to bottom, rgba(20,49,44,0.4), transparent);
+    flex-shrink: 0;
+  }
+  .fb-head__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .fb-head__title svg { color: var(--green-400); }
+  .fb-head__title em {
+    font-style: normal;
+    color: var(--text-muted);
+    margin-left: 4px;
+  }
+  .fb-head__spacer { flex: 1; }
+
+  .fb-head__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .fb-head__meta .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green-400);
+    box-shadow: 0 0 6px var(--green-glow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(73,212,155,0.5); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(73,212,155,0); }
+  }
+
+  .fb-head__close {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--r-sm);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background var(--dur-mid), color var(--dur-mid);
+  }
+  .fb-head__close:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* ───────────────────────── SOURCE BAR ───────────────────────── */
+  .fb-sources {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--border-default);
+    background: var(--bg-void);
+    flex-shrink: 0;
+  }
+  .fb-source {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-right: 1px solid var(--border-default);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color var(--dur-mid), background var(--dur-mid);
+    user-select: none;
+    white-space: nowrap;
+  }
+  .fb-source:hover { color: var(--text-secondary); background: rgba(20,49,44,0.4); }
+  .fb-source--active {
+    color: var(--text-primary);
+    background: var(--bg-panel);
+    border-bottom-color: var(--green-400);
+  }
+  .fb-source__icon {
+    width: 14px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+  }
+  .fb-source--active .fb-source__icon { color: var(--green-400); }
+  .fb-source__role {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 1px 5px;
+    border-radius: var(--r-sm);
+    border: 1px solid;
+  }
+  .fb-source__role--host { color: var(--cyan-400); border-color: var(--cyan-600); background: rgba(58,184,240,0.08); }
+  .fb-source__role--app  { color: var(--green-400); border-color: var(--green-600); background: rgba(73,212,155,0.08); }
+  .fb-source__role--bac  { color: var(--text-dim); border-color: var(--border-strong); background: transparent; }
+  .fb-source__add {
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1;
+    transition: color var(--dur-mid);
+  }
+  .fb-source__add:hover { color: var(--green-400); }
+
+  /* ───────────────────────── TOOLBAR ───────────────────────── */
+  .fb-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-default);
+    flex-shrink: 0;
+  }
+  .fb-tb-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--dur-mid);
+  }
+  .fb-tb-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .fb-tb-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .fb-breadcrumb {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: 4px 10px;
+    font-size: 11px;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .fb-breadcrumb__seg {
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .fb-breadcrumb__seg:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+  .fb-breadcrumb__seg--last {
+    color: var(--green-400);
+    pointer-events: none;
+  }
+  .fb-breadcrumb__sep {
+    color: var(--text-muted);
+    font-size: 10px;
+  }
+  .fb-breadcrumb__edit {
+    width: 22px; height: 22px;
+    margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .fb-breadcrumb__edit:hover { color: var(--green-400); }
+
+  .fb-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: 4px 10px;
+    width: 200px;
+  }
+  .fb-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-primary);
+    min-width: 0;
+  }
+  .fb-search input::placeholder { color: var(--text-muted); }
+  .fb-search__icon { color: var(--text-muted); flex-shrink: 0; }
+
+  .fb-tb-btn--primary {
+    width: auto;
+    padding: 0 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    background: var(--green-400);
+    color: var(--text-inverse);
+    border-color: var(--green-400);
+    box-shadow: 0 0 0 1px rgba(73,212,155,0.3), 0 2px 12px rgba(12,245,149,0.2);
+    gap: 6px;
+  }
+  .fb-tb-btn--primary:hover {
+    background: var(--green-300);
+    border-color: var(--green-300);
+    color: var(--text-inverse);
+    box-shadow: 0 0 0 1px rgba(73,212,155,0.5), 0 4px 18px rgba(12,245,149,0.35);
+  }
+
+  /* ───────────────────────── BODY GRID ───────────────────────── */
+  .fb-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 200px 1fr 240px;
+    min-height: 0;
+  }
+
+  /* ── Left tree ── */
+  .fb-tree {
+    border-right: 1px solid var(--border-default);
+    background: var(--bg-void);
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .fb-tree__group {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 12px 4px;
+  }
+  .fb-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: background var(--dur-fast), color var(--dur-fast);
+    user-select: none;
+  }
+  .fb-tree-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .fb-tree-item--active {
+    background: var(--bg-selected);
+    color: var(--text-primary);
+    border-left-color: var(--green-400);
+  }
+  .fb-tree-item__caret {
+    width: 10px;
+    color: var(--text-muted);
+    font-size: 8px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .fb-tree-item__icon { color: var(--text-muted); flex-shrink: 0; }
+  .fb-tree-item--active .fb-tree-item__icon { color: var(--green-400); }
+  .fb-tree-item__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .fb-tree-item__count {
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .fb-tree-item--child { padding-left: 28px; }
+  .fb-tree-item--gchild { padding-left: 40px; }
+
+  .fb-tree__divider {
+    height: 1px;
+    background: var(--border-default);
+    margin: 8px 0;
+  }
+
+  /* mini disk gauge in tree footer */
+  .fb-tree__disk {
+    margin: 12px;
+    padding: 10px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+  }
+  .fb-tree__disk-label {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .fb-tree__disk-label span:last-child { color: var(--green-400); }
+  .seg-bar {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .seg-bar__step {
+    width: 5px;
+    height: 8px;
+    border-radius: 1px;
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+  }
+  .seg-bar__step--on { background: var(--green-400); }
+  .seg-bar__step--warn { background: var(--amber-400); }
+  .fb-tree__disk-val {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .fb-tree__disk-val span:first-child { color: var(--text-secondary); }
+
+  /* ───────────────────────── LISTING ───────────────────────── */
+  .fb-list {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--bg-panel);
+    position: relative;
+  }
+  .fb-list__head {
+    display: grid;
+    grid-template-columns: 28px 1fr 70px 90px 110px 28px;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-default);
+    background: var(--bg-void);
+    flex-shrink: 0;
+  }
+  .fb-list__head .col-sort::after {
+    content: " ▾";
+    color: var(--green-400);
+  }
+  .fb-list__rows {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .fb-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 70px 90px 110px 28px;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: background var(--dur-fast);
+    user-select: none;
+  }
+  .fb-row:hover { background: var(--bg-elevated); }
+  .fb-row--selected {
+    background: var(--bg-selected);
+    box-shadow: inset 2px 0 0 var(--green-400);
+  }
+  .fb-row--focused {
+    background: var(--bg-selected);
+    box-shadow: inset 2px 0 0 var(--green-400);
+  }
+
+  .fb-check {
+    width: 14px; height: 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+    flex-shrink: 0;
+  }
+  .fb-row--selected .fb-check {
+    background: var(--green-400);
+    border-color: var(--green-400);
+    color: var(--text-inverse);
+  }
+
+  .fb-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .fb-name__icon { flex-shrink: 0; }
+  .fb-name__icon--folder { color: var(--green-400); }
+  .fb-name__icon--file   { color: var(--text-muted); }
+  .fb-name__icon--link   { color: var(--cyan-400); }
+  .fb-name__icon--exec   { color: var(--amber-400); }
+  .fb-name__icon--img    { color: var(--green-300); }
+  .fb-name__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fb-name__text--folder { color: var(--text-primary); font-weight: 500; }
+  .fb-name__text--link   { color: var(--cyan-300); }
+  .fb-name__badge {
+    font-size: 9px;
+    color: var(--cyan-400);
+    background: rgba(58,184,240,0.1);
+    border: 1px solid var(--cyan-600);
+    padding: 0 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .fb-cell-mono {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .fb-cell-perm {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .fb-cell-perm em { font-style: normal; color: var(--green-400); }
+
+  .fb-row__menu {
+    width: 24px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    border-radius: 2px;
+    visibility: hidden;
+  }
+  .fb-row:hover .fb-row__menu { visibility: visible; }
+  .fb-row__menu:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+  /* dropzone overlay (always on, subtly visible) */
+  .fb-dropzone {
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--r-md);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(73,212,155,0.04);
+    z-index: 5;
+  }
+  .fb-dropzone__caption {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-400);
+  }
+  /* demo: show dropzone state */
+  .fb-list--dropping .fb-dropzone { opacity: 1; }
+
+  /* ───────────────────────── PREVIEW PANE ───────────────────────── */
+  .fb-preview {
+    border-left: 1px solid var(--border-default);
+    background: var(--bg-base);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .fb-preview__head {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-default);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fb-preview__head span { color: var(--green-400); }
+
+  .fb-preview__icon {
+    margin: 16px 12px 8px;
+    height: 90px;
+    background: var(--bg-void);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-400);
+    position: relative;
+    overflow: hidden;
+  }
+  .fb-preview__icon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(73,212,155,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(73,212,155,0.05) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .fb-preview__name {
+    padding: 0 12px;
+    font-size: 12px;
+    color: var(--text-primary);
+    word-break: break-all;
+    margin-bottom: 4px;
+  }
+  .fb-preview__path {
+    padding: 0 12px 12px;
+    font-size: 10px;
+    color: var(--text-muted);
+    word-break: break-all;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .fb-preview__rows {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .fb-preview__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+  }
+  .fb-preview__row span:first-child {
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .fb-preview__row span:last-child {
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .fb-preview__row em { font-style: normal; color: var(--green-400); }
+
+  .fb-preview__actions {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .fb-pa-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all var(--dur-mid);
+    text-align: left;
+  }
+  .fb-pa-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .fb-pa-btn--primary {
+    background: rgba(73,212,155,0.08);
+    border-color: var(--green-600);
+    color: var(--green-400);
+  }
+  .fb-pa-btn--primary:hover {
+    background: rgba(73,212,155,0.15);
+    border-color: var(--green-400);
+    color: var(--green-300);
+    box-shadow: 0 0 12px rgba(12,245,149,0.15);
+  }
+  .fb-pa-btn--danger {
+    color: var(--red-400);
+    border-color: var(--red-600);
+  }
+  .fb-pa-btn--danger:hover {
+    background: rgba(226,92,117,0.08);
+    border-color: var(--red-400);
+  }
+  .fb-pa-btn__kbd {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 9px;
+  }
+
+  /* ───────────────────────── BULK ACTION BAR ───────────────────────── */
+  .fb-bulk {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    overflow: hidden;
+    z-index: 10;
+  }
+  .fb-bulk__count {
+    padding: 6px 12px;
+    font-size: 11px;
+    color: var(--text-primary);
+    background: var(--bg-selected);
+    border-right: 1px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  .fb-bulk__count em {
+    font-style: normal;
+    color: var(--green-400);
+    font-weight: 600;
+  }
+  .fb-bulk__btn {
+    padding: 6px 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    border-right: 1px solid var(--border-default);
+    transition: background var(--dur-fast), color var(--dur-fast);
+  }
+  .fb-bulk__btn:last-child { border-right: none; }
+  .fb-bulk__btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .fb-bulk__btn--danger { color: var(--red-400); }
+  .fb-bulk__btn--danger:hover { background: rgba(226,92,117,0.08); }
+
+  /* ───────────────────────── FOOTER / TRANSFER QUEUE ───────────────────────── */
+  .fb-foot {
+    border-top: 1px solid var(--border-default);
+    background: var(--bg-void);
+    flex-shrink: 0;
+  }
+  .fb-foot__bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 12px;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .fb-foot__bar em {
+    font-style: normal;
+    color: var(--green-400);
+  }
+  .fb-foot__sep {
+    width: 1px;
+    height: 10px;
+    background: var(--border-default);
+  }
+  .fb-foot__bar .spacer { flex: 1; }
+  .fb-foot__toggle {
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: 2px;
+    padding: 1px 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .fb-foot__toggle:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .fb-foot__toggle .caret { color: var(--green-400); font-size: 9px; }
+
+  /* transfer queue panel (shown above footer bar) */
+  .fb-queue {
+    border-top: 1px solid var(--border-default);
+    max-height: 140px;
+    overflow-y: auto;
+  }
+  .fb-q-row {
+    display: grid;
+    grid-template-columns: 16px 1fr 100px 60px 60px 24px;
+    gap: 10px;
+    align-items: center;
+    padding: 5px 12px;
+    font-size: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .fb-q-row:last-child { border-bottom: none; }
+  .fb-q-row__icon {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green-400);
+  }
+  .fb-q-row__icon--up { color: var(--green-400); }
+  .fb-q-row__icon--down { color: var(--cyan-400); }
+  .fb-q-row__icon--err { color: var(--red-400); }
+  .fb-q-row__icon--done { color: var(--text-muted); }
+  .fb-q-row__name {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .fb-q-row__name span:last-child {
+    color: var(--text-muted);
+    font-size: 9px;
+  }
+  .fb-q-row__name strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .fb-q-row__rate {
+    color: var(--text-muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .fb-q-row__pct {
+    color: var(--green-400);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .fb-q-row__pct--err { color: var(--red-400); }
+  .fb-q-row__pct--done { color: var(--text-muted); }
+  .fb-q-row__cancel {
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .fb-q-row__cancel:hover { color: var(--red-400); background: rgba(226,92,117,0.08); }
+
+  /* keep ::-webkit-scrollbar tidy */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-elevated);
+    border-radius: 4px;
+    border: 2px solid var(--bg-panel);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+</style>
+</head>
+<body>
+
+<div class="stage-label">FloatLab / Component / FileBrowser.modal</div>
+
+<!-- Inline icons used inline through the file -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-folder" viewBox="0 0 16 16"><path d="M1.5 3.5h4l1.5 1.5h7.5v8.5h-13z" fill="currentColor"/></symbol>
+    <symbol id="i-folder-o" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1.5 4h4l1.5 1.5h7.5v8h-13z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 1.5h6l3 3v10h-9z"/><path d="M9 1.5v3h3"/></symbol>
+    <symbol id="i-file-img" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 1.5h6l3 3v10h-9z"/><path d="M9 1.5v3h3"/><circle cx="6" cy="9" r="1"/><path d="M3 13l3-3 3 2 3-3v4z" fill="currentColor"/></symbol>
+    <symbol id="i-file-exec" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 1.5h6l3 3v10h-9z"/><path d="M9 1.5v3h3"/><path d="M5 9l2 2 4-4" stroke-width="1.4"/></symbol>
+    <symbol id="i-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 1.5h6l3 3v10h-9z"/><path d="M5 9.5l3-3 3 3"/></symbol>
+    <symbol id="i-server" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="2.5" width="12" height="4.5" rx="1"/><rect x="2" y="9" width="12" height="4.5" rx="1"/><circle cx="4.5" cy="4.75" r="0.5" fill="currentColor"/><circle cx="4.5" cy="11.25" r="0.5" fill="currentColor"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 1.5l5.5 3v6.5L8 14 2.5 11V4.5z"/><path d="M8 8L2.5 4.5M8 8l5.5-3.5M8 8v6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 4l-4 4 4 4"/></symbol>
+    <symbol id="i-fwd" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 4l4 4-4 4"/></symbol>
+    <symbol id="i-up" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9l4-4 4 4"/><path d="M8 13V5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M13 8a5 5 0 1 1-1.5-3.5"/><path d="M13 2.5V5h-2.5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 14l1-3 8-8 2 2-8 8z"/></symbol>
+    <symbol id="i-up-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 13V3M3 8l5-5 5 5"/></symbol>
+    <symbol id="i-down-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v10M3 8l5 5 5-5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.5 9h6l.5-9"/></symbol>
+    <symbol id="i-move" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 2v12M2 8h12M5 5l-3 3 3 3M11 5l3 3-3 3M5 5h-3v3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="8" height="10" rx="1"/><path d="M5 3V1.5h8V12h-1.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v10M3 8h10"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1.5" y="2.5" width="13" height="11" rx="1"/><path d="M4 6l3 2-3 2M8 11h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></symbol>
+    <symbol id="i-folder-add" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1.5 4h4l1.5 1.5h7.5v8h-13z"/><path d="M8 8.5v3M6.5 10h3"/></symbol>
+    <symbol id="i-floatlab" viewBox="0 0 294 232" fill="currentColor">
+      <path d="M119 140l126-72c4-2 9-2 13 0l28 16c3 2 3 6 0 8L161 164c-4 3-7 7-7 12v48c0 4-4 6-7 4l-28-16c-4-2-7-7-7-12v-48c0-5 3-10 7-12z"/>
+      <path d="M63 108l126-72c4-2 9-2 13 0l28 16c3 2 3 6 0 8L105 132c-4 3-7 7-7 12v48c0 4-4 6-7 4l-28-16c-4-2-7-7-7-12v-48c0-5 3-10 7-12z"/>
+      <path d="M7 76L133 4c4-2 9-2 13 0l28 16c3 2 3 6 0 8L49 100c-4 3-7 7-7 12v48c0 4-4 6-7 4L7 148c-4-2-7-7-7-12V88c0-5 3-10 7-12z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="fb-modal" role="dialog" aria-label="File browser">
+
+  <!-- ── Header ── -->
+  <div class="fb-head">
+    <div class="fb-head__title">
+      <svg width="16" height="13"><use href="#i-floatlab"/></svg>
+      Files
+      <em>/ immich · /var/lib/immich/upload</em>
+    </div>
+    <div class="fb-head__spacer"></div>
+    <div class="fb-head__meta">
+      <span class="dot"></span>
+      <span>connected via hv01.cavslab.local</span>
+    </div>
+    <div class="fb-head__sep" style="width:1px; height:14px; background: var(--border-default);"></div>
+    <div class="fb-head__meta" style="color:var(--text-secondary);">128ms</div>
+    <button class="fb-head__close" aria-label="Close">
+      <svg width="14" height="14"><use href="#i-x"/></svg>
+    </button>
+  </div>
+
+  <!-- ── Source tabs (host + containers) ── -->
+  <div class="fb-sources">
+    <div class="fb-source">
+      <span class="fb-source__icon"><svg width="14" height="14"><use href="#i-server"/></svg></span>
+      <span>hv01</span>
+      <span class="fb-source__role fb-source__role--host">HOST</span>
+    </div>
+    <div class="fb-source">
+      <span class="fb-source__icon"><svg width="14" height="14"><use href="#i-server"/></svg></span>
+      <span>hv02</span>
+      <span class="fb-source__role fb-source__role--host">HOST</span>
+    </div>
+    <div class="fb-source fb-source--active">
+      <span class="fb-source__icon"><svg width="14" height="14"><use href="#i-cube"/></svg></span>
+      <span>immich</span>
+      <span class="fb-source__role fb-source__role--app">APP</span>
+    </div>
+    <div class="fb-source">
+      <span class="fb-source__icon"><svg width="14" height="14"><use href="#i-cube"/></svg></span>
+      <span>postgres-16</span>
+      <span class="fb-source__role fb-source__role--app">APP</span>
+    </div>
+    <div class="fb-source">
+      <span class="fb-source__icon"><svg width="14" height="14"><use href="#i-cube"/></svg></span>
+      <span>backup-rsync</span>
+      <span class="fb-source__role fb-source__role--bac">BAC</span>
+    </div>
+    <button class="fb-source__add" title="Attach another source">+</button>
+  </div>
+
+  <!-- ── Toolbar ── -->
+  <div class="fb-toolbar">
+    <button class="fb-tb-btn" title="Back"><svg width="14" height="14"><use href="#i-back"/></svg></button>
+    <button class="fb-tb-btn" title="Forward" disabled><svg width="14" height="14"><use href="#i-fwd"/></svg></button>
+    <button class="fb-tb-btn" title="Up one level"><svg width="14" height="14"><use href="#i-up"/></svg></button>
+    <button class="fb-tb-btn" title="Refresh"><svg width="14" height="14"><use href="#i-refresh"/></svg></button>
+
+    <div class="fb-breadcrumb" aria-label="Path">
+      <span class="fb-breadcrumb__seg">/</span>
+      <span class="fb-breadcrumb__sep">›</span>
+      <span class="fb-breadcrumb__seg">var</span>
+      <span class="fb-breadcrumb__sep">›</span>
+      <span class="fb-breadcrumb__seg">lib</span>
+      <span class="fb-breadcrumb__sep">›</span>
+      <span class="fb-breadcrumb__seg">immich</span>
+      <span class="fb-breadcrumb__sep">›</span>
+      <span class="fb-breadcrumb__seg fb-breadcrumb__seg--last">upload</span>
+      <button class="fb-breadcrumb__edit" title="Edit path"><svg width="12" height="12"><use href="#i-pencil"/></svg></button>
+    </div>
+
+    <div class="fb-search">
+      <span class="fb-search__icon"><svg width="12" height="12"><use href="#i-search"/></svg></span>
+      <input type="text" placeholder="filter…" />
+    </div>
+
+    <button class="fb-tb-btn" title="New folder"><svg width="14" height="14"><use href="#i-folder-add"/></svg></button>
+    <button class="fb-tb-btn" title="Open shell here"><svg width="14" height="14"><use href="#i-terminal"/></svg></button>
+    <button class="fb-tb-btn fb-tb-btn--primary">
+      <svg width="12" height="12"><use href="#i-up-arrow"/></svg>
+      UPLOAD
+    </button>
+  </div>
+
+  <!-- ── Body ── -->
+  <div class="fb-body">
+
+    <!-- Left tree -->
+    <aside class="fb-tree">
+      <div class="fb-tree__group">Pinned</div>
+      <div class="fb-tree-item">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">/etc</span>
+      </div>
+      <div class="fb-tree-item">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">/var/log</span>
+      </div>
+      <div class="fb-tree-item">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">/data/photos</span>
+      </div>
+
+      <div class="fb-tree__group">Container fs</div>
+      <div class="fb-tree-item">
+        <span class="fb-tree-item__caret">▾</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder"/></svg></span>
+        <span class="fb-tree-item__name">/</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--child">
+        <span class="fb-tree-item__caret">▸</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">etc</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--child">
+        <span class="fb-tree-item__caret">▾</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder"/></svg></span>
+        <span class="fb-tree-item__name">var</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--gchild">
+        <span class="fb-tree-item__caret">▾</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder"/></svg></span>
+        <span class="fb-tree-item__name">lib/immich</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--gchild fb-tree-item--active" style="padding-left: 52px;">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder"/></svg></span>
+        <span class="fb-tree-item__name">upload</span>
+        <span class="fb-tree-item__count">412</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--gchild" style="padding-left: 52px;">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">thumbs</span>
+        <span class="fb-tree-item__count">3.2k</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--gchild" style="padding-left: 52px;">
+        <span class="fb-tree-item__caret"></span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">encoded</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--child">
+        <span class="fb-tree-item__caret">▸</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">home</span>
+      </div>
+      <div class="fb-tree-item fb-tree-item--child">
+        <span class="fb-tree-item__caret">▸</span>
+        <span class="fb-tree-item__icon"><svg width="13" height="13"><use href="#i-folder-o"/></svg></span>
+        <span class="fb-tree-item__name">tmp</span>
+      </div>
+
+      <div class="fb-tree__disk">
+        <div class="fb-tree__disk-label">
+          <span>volume usage</span>
+          <span>62%</span>
+        </div>
+        <div class="seg-bar">
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+        </div>
+        <div class="fb-tree__disk-val">
+          <span>248.6 GB used</span>
+          <span>151.4 free</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Listing -->
+    <div class="fb-list">
+      <div class="fb-list__head">
+        <span></span>
+        <span class="col-sort">name</span>
+        <span style="text-align:right;">size</span>
+        <span style="text-align:right;">perms</span>
+        <span style="text-align:right;">modified</span>
+        <span></span>
+      </div>
+
+      <div class="fb-list__rows">
+        <!-- folders -->
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--folder"><svg width="14" height="14"><use href="#i-folder"/></svg></span>
+            <span class="fb-name__text fb-name__text--folder">..</span>
+          </span>
+          <span class="fb-cell-mono">—</span>
+          <span class="fb-cell-perm">drwxr-xr-x</span>
+          <span class="fb-cell-mono">—</span>
+          <span class="fb-row__menu"></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--folder"><svg width="14" height="14"><use href="#i-folder"/></svg></span>
+            <span class="fb-name__text fb-name__text--folder">2025-01</span>
+          </span>
+          <span class="fb-cell-mono">412 items</span>
+          <span class="fb-cell-perm">drwxr-xr-x</span>
+          <span class="fb-cell-mono">2 hr ago</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--folder"><svg width="14" height="14"><use href="#i-folder"/></svg></span>
+            <span class="fb-name__text fb-name__text--folder">2024-12</span>
+          </span>
+          <span class="fb-cell-mono">3,210 items</span>
+          <span class="fb-cell-perm">drwxr-xr-x</span>
+          <span class="fb-cell-mono">Jan 02</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row fb-row--selected">
+          <span class="fb-check"><svg width="10" height="10"><use href="#i-check"/></svg></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--link"><svg width="14" height="14"><use href="#i-link"/></svg></span>
+            <span class="fb-name__text fb-name__text--link">backups → /mnt/cold/immich</span>
+            <span class="fb-name__badge">SYMLINK</span>
+          </span>
+          <span class="fb-cell-mono">—</span>
+          <span class="fb-cell-perm">lrwxrwxrwx</span>
+          <span class="fb-cell-mono">Dec 14</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+
+        <!-- files -->
+        <div class="fb-row fb-row--focused">
+          <span class="fb-check"><svg width="10" height="10"><use href="#i-check"/></svg></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--img"><svg width="14" height="14"><use href="#i-file-img"/></svg></span>
+            <span class="fb-name__text">IMG_4827.heic</span>
+          </span>
+          <span class="fb-cell-mono">3.4 MB</span>
+          <span class="fb-cell-perm"><em>-rw-r--r--</em></span>
+          <span class="fb-cell-mono">14:02</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row fb-row--selected">
+          <span class="fb-check"><svg width="10" height="10"><use href="#i-check"/></svg></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--img"><svg width="14" height="14"><use href="#i-file-img"/></svg></span>
+            <span class="fb-name__text">IMG_4828.heic</span>
+          </span>
+          <span class="fb-cell-mono">2.8 MB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">14:02</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--img"><svg width="14" height="14"><use href="#i-file-img"/></svg></span>
+            <span class="fb-name__text">IMG_4829.heic</span>
+          </span>
+          <span class="fb-cell-mono">3.9 MB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">14:03</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--img"><svg width="14" height="14"><use href="#i-file-img"/></svg></span>
+            <span class="fb-name__text">VID_4831.mov</span>
+          </span>
+          <span class="fb-cell-mono">142.7 MB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">14:08</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row fb-row--selected">
+          <span class="fb-check"><svg width="10" height="10"><use href="#i-check"/></svg></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--img"><svg width="14" height="14"><use href="#i-file-img"/></svg></span>
+            <span class="fb-name__text">screenshot-2025-01-14.png</span>
+          </span>
+          <span class="fb-cell-mono">812 KB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">13:51</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--exec"><svg width="14" height="14"><use href="#i-file-exec"/></svg></span>
+            <span class="fb-name__text">migrate.sh</span>
+          </span>
+          <span class="fb-cell-mono">2.1 KB</span>
+          <span class="fb-cell-perm"><em>-rwxr-xr-x</em></span>
+          <span class="fb-cell-mono">Jan 11</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--file"><svg width="14" height="14"><use href="#i-file"/></svg></span>
+            <span class="fb-name__text">manifest.json</span>
+          </span>
+          <span class="fb-cell-mono">14.7 KB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">Jan 09</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--file"><svg width="14" height="14"><use href="#i-file"/></svg></span>
+            <span class="fb-name__text">postgres-dump.sql.gz</span>
+          </span>
+          <span class="fb-cell-mono">1.2 GB</span>
+          <span class="fb-cell-perm">-rw-------</span>
+          <span class="fb-cell-mono">Jan 08</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--file"><svg width="14" height="14"><use href="#i-file"/></svg></span>
+            <span class="fb-name__text">.env</span>
+          </span>
+          <span class="fb-cell-mono">428 B</span>
+          <span class="fb-cell-perm">-rw-------</span>
+          <span class="fb-cell-mono">Dec 30</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+        <div class="fb-row">
+          <span class="fb-check"></span>
+          <span class="fb-name">
+            <span class="fb-name__icon fb-name__icon--file"><svg width="14" height="14"><use href="#i-file"/></svg></span>
+            <span class="fb-name__text">README.md</span>
+          </span>
+          <span class="fb-cell-mono">3.9 KB</span>
+          <span class="fb-cell-perm">-rw-r--r--</span>
+          <span class="fb-cell-mono">Dec 28</span>
+          <span class="fb-row__menu"><svg width="14" height="14"><use href="#i-dots"/></svg></span>
+        </div>
+      </div>
+
+      <!-- Bulk action bar (visible because rows are selected) -->
+      <div class="fb-bulk" role="toolbar" aria-label="Bulk actions">
+        <div class="fb-bulk__count"><em>3</em> selected · 7.0 MB</div>
+        <button class="fb-bulk__btn">
+          <svg width="12" height="12"><use href="#i-down-arrow"/></svg>
+          download
+        </button>
+        <button class="fb-bulk__btn">
+          <svg width="12" height="12"><use href="#i-move"/></svg>
+          move
+        </button>
+        <button class="fb-bulk__btn">
+          <svg width="12" height="12"><use href="#i-copy"/></svg>
+          copy
+        </button>
+        <button class="fb-bulk__btn">
+          <svg width="12" height="12"><use href="#i-pencil"/></svg>
+          rename
+        </button>
+        <button class="fb-bulk__btn fb-bulk__btn--danger">
+          <svg width="12" height="12"><use href="#i-trash"/></svg>
+          delete
+        </button>
+      </div>
+
+      <!-- Drop overlay (idle) -->
+      <div class="fb-dropzone">
+        <div class="fb-dropzone__caption">drop to upload here</div>
+      </div>
+    </div>
+
+    <!-- Right preview / details -->
+    <aside class="fb-preview">
+      <div class="fb-preview__head">
+        <span>▸</span> details
+      </div>
+      <div class="fb-preview__icon" aria-hidden="true">
+        <svg width="36" height="36"><use href="#i-file-img"/></svg>
+      </div>
+      <div class="fb-preview__name">IMG_4827.heic</div>
+      <div class="fb-preview__path">/var/lib/immich/upload/IMG_4827.heic</div>
+
+      <div class="fb-preview__rows">
+        <div class="fb-preview__row"><span>type</span><span>image / heic</span></div>
+        <div class="fb-preview__row"><span>size</span><span>3.4 MB <em>· 3,612,341 B</em></span></div>
+        <div class="fb-preview__row"><span>perms</span><span>0644</span></div>
+        <div class="fb-preview__row"><span>owner</span><span>1000:1000</span></div>
+        <div class="fb-preview__row"><span>modified</span><span>14:02:47</span></div>
+        <div class="fb-preview__row"><span>created</span><span>Jan 14 13:55</span></div>
+        <div class="fb-preview__row"><span>sha-256</span><span>e3b0c4…d984</span></div>
+      </div>
+
+      <div class="fb-preview__actions">
+        <button class="fb-pa-btn fb-pa-btn--primary">
+          <svg width="12" height="12"><use href="#i-down-arrow"/></svg>
+          download
+          <span class="fb-pa-btn__kbd">⌘D</span>
+        </button>
+        <button class="fb-pa-btn">
+          <svg width="12" height="12"><use href="#i-eye"/></svg>
+          open / view
+          <span class="fb-pa-btn__kbd">⏎</span>
+        </button>
+        <button class="fb-pa-btn">
+          <svg width="12" height="12"><use href="#i-copy"/></svg>
+          copy path
+        </button>
+        <button class="fb-pa-btn">
+          <svg width="12" height="12"><use href="#i-move"/></svg>
+          move to…
+        </button>
+        <button class="fb-pa-btn">
+          <svg width="12" height="12"><use href="#i-pencil"/></svg>
+          rename
+          <span class="fb-pa-btn__kbd">F2</span>
+        </button>
+        <button class="fb-pa-btn fb-pa-btn--danger">
+          <svg width="12" height="12"><use href="#i-trash"/></svg>
+          delete
+          <span class="fb-pa-btn__kbd">⌫</span>
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ── Footer / transfer queue ── -->
+  <div class="fb-foot">
+
+    <div class="fb-queue">
+      <div class="fb-q-row">
+        <span class="fb-q-row__icon fb-q-row__icon--up">
+          <svg width="11" height="11"><use href="#i-up-arrow"/></svg>
+        </span>
+        <span class="fb-q-row__name">
+          <strong>family-photos.zip</strong>
+          <span>→ /var/lib/immich/upload</span>
+        </span>
+        <span class="seg-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+        </span>
+        <span class="fb-q-row__rate">14.2 MB/s</span>
+        <span class="fb-q-row__pct">60%</span>
+        <button class="fb-q-row__cancel" aria-label="Cancel">
+          <svg width="10" height="10"><use href="#i-x"/></svg>
+        </button>
+      </div>
+      <div class="fb-q-row">
+        <span class="fb-q-row__icon fb-q-row__icon--down">
+          <svg width="11" height="11"><use href="#i-down-arrow"/></svg>
+        </span>
+        <span class="fb-q-row__name">
+          <strong>postgres-dump.sql.gz</strong>
+          <span>← immich:/backup</span>
+        </span>
+        <span class="seg-bar">
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+        </span>
+        <span class="fb-q-row__rate">8.7 MB/s</span>
+        <span class="fb-q-row__pct">31%</span>
+        <button class="fb-q-row__cancel" aria-label="Cancel">
+          <svg width="10" height="10"><use href="#i-x"/></svg>
+        </button>
+      </div>
+      <div class="fb-q-row">
+        <span class="fb-q-row__icon fb-q-row__icon--err">
+          <svg width="11" height="11"><use href="#i-x"/></svg>
+        </span>
+        <span class="fb-q-row__name">
+          <strong>VID_4815.mov</strong>
+          <span>permission denied · needs sudo</span>
+        </span>
+        <span class="seg-bar">
+          <span class="seg-bar__step seg-bar__step--warn"></span>
+          <span class="seg-bar__step seg-bar__step--warn"></span>
+          <span class="seg-bar__step seg-bar__step--warn"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+          <span class="seg-bar__step"></span>
+        </span>
+        <span class="fb-q-row__rate">—</span>
+        <span class="fb-q-row__pct fb-q-row__pct--err">FAIL</span>
+        <button class="fb-q-row__cancel" aria-label="Dismiss">
+          <svg width="10" height="10"><use href="#i-x"/></svg>
+        </button>
+      </div>
+      <div class="fb-q-row">
+        <span class="fb-q-row__icon fb-q-row__icon--done">
+          <svg width="11" height="11"><use href="#i-check"/></svg>
+        </span>
+        <span class="fb-q-row__name">
+          <strong>migrate.sh</strong>
+          <span>→ /var/lib/immich/upload · 2 min ago</span>
+        </span>
+        <span class="seg-bar">
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+          <span class="seg-bar__step seg-bar__step--on"></span>
+        </span>
+        <span class="fb-q-row__rate">—</span>
+        <span class="fb-q-row__pct fb-q-row__pct--done">DONE</span>
+        <button class="fb-q-row__cancel" aria-label="Clear">
+          <svg width="10" height="10"><use href="#i-x"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="fb-foot__bar">
+      <span><em>14</em> items · 3 selected · <em>7.0 MB</em></span>
+      <span class="fb-foot__sep"></span>
+      <span>free <em>151.4 GB</em></span>
+      <span class="fb-foot__sep"></span>
+      <span>queue: 2 active · 1 failed · 1 done</span>
+      <span class="spacer"></span>
+      <button class="fb-foot__toggle">
+        transfers
+        <span class="caret">▾</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

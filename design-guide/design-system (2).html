@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FloatLab Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* === BACKGROUNDS — from Figma === */
+    --bg-void:    rgb(9,15,17);
+    --bg-base:    rgb(19,28,27);
+    --bg-panel:   rgb(13,26,27);
+    --bg-elevated:rgb(20,49,44);
+    --bg-hover:   rgb(28,56,50);
+    --bg-selected:rgb(32,64,56);
+
+    /* === BORDERS === */
+    --border-subtle:  rgb(19,28,27);
+    --border-default: rgb(40,75,59);
+    --border-strong:  rgb(56,96,76);
+    --border-focus:   rgb(73,212,155);
+
+    /* === BRAND / PRIMARY GREEN — exact Figma value === */
+    --green-100: rgb(212,249,235);
+    --green-200: rgb(160,240,210);
+    --green-300: rgb(113,228,182);
+    --green-400: rgb(73,212,155);
+    --green-500: rgb(40,160,115);
+    --green-600: rgb(20,100,72);
+    --green-700: rgb(10,60,44);
+    --green-800: rgb(5,32,24);
+    --green-glow: rgba(12,245,149,0.3);
+
+    /* === ERROR / PINK — exact Figma value === */
+    --red-300: rgb(240,160,175);
+    --red-400: rgb(226,92,117);
+    --red-500: rgb(180,56,80);
+    --red-600: rgb(123,0,23);
+
+    /* === WARNING / ORANGE — exact Figma "Not Replicating" === */
+    --amber-300: rgb(255,180,140);
+    --amber-400: rgb(245,93,60);
+    --amber-500: rgb(196,60,32);
+    --amber-600: rgb(140,32,12);
+
+    /* === INFO / CYAN === */
+    --cyan-300: rgb(136,221,245);
+    --cyan-400: rgb(58,184,240);
+    --cyan-500: rgb(26,139,191);
+    --cyan-600: rgb(13,94,130);
+
+    /* === TEXT — from Figma === */
+    --text-primary:   rgb(255,255,255);
+    --text-secondary: rgb(240,240,240);
+    --text-dim:       rgba(240,240,240,0.4);
+    --text-muted:     rgb(40,75,59);
+    --text-disabled:  rgb(40,48,50);
+    --text-inverse:   rgb(9,15,17);
+
+    /* === SEMANTIC ALIASES === */
+    --color-success: var(--green-400);
+    --color-error:   var(--red-400);
+    --color-warning: var(--amber-400);
+    --color-info:    var(--cyan-400);
+
+    /* === TYPOGRAPHY === */
+    --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
+    --font-brand: 'Manrope', sans-serif;
+
+    /* === SPACING === */
+    --sp-1:  4px;
+    --sp-2:  8px;
+    --sp-3:  12px;
+    --sp-4:  16px;
+    --sp-5:  20px;
+    --sp-6:  24px;
+    --sp-7:  28px;
+    --sp-8:  32px;
+    --sp-9:  40px;
+    --sp-10: 48px;
+    --sp-11: 56px;
+    --sp-12: 64px;
+
+    /* === RADIUS === */
+    --r-sm:  2px;
+    --r-md:  4px;
+    --r-lg:  6px;
+
+    /* === SHADOWS === */
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+    --shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
+    --shadow-glow-green: 0 0 12px rgba(73,212,155,0.25);
+    --shadow-glow-red:   0 0 12px rgba(226,92,117,0.2);
+
+    /* === MOTION === */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:  cubic-bezier(0.4, 0, 1, 1);
+    --dur-fast: 80ms;
+    --dur-mid:  160ms;
+    --dur-slow: 320ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 13px; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Doc layout ── */
+  .ds-root {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--sp-12) var(--sp-8);
+    overflow-x: hidden;
+  }
+
+  /* ── Section wrapper ── */
+  .ds-section {
+    margin-bottom: var(--sp-12);
+  }
+
+  .ds-section-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: var(--sp-4);
+    margin-bottom: var(--sp-8);
+  }
+
+  .ds-section-title span {
+    color: var(--green-400);
+    margin-right: var(--sp-3);
+  }
+
+  /* ── Token grid ── */
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--sp-4);
+  }
+
+  .token-swatch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .token-swatch__color {
+    height: 40px;
+    border-radius: var(--r-md);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .token-swatch__label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .token-swatch__value {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* ── Row helper ── */
+  .ds-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+    align-items: flex-start;
+  }
+
+  .ds-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  /* ── Component example card ── */
+  .ds-example {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: var(--sp-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+
+  .ds-example__label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-2);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     BRAND HEADER
+  ──────────────────────────────────────────────────────── */
+  .brand-hero {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    margin-bottom: var(--sp-12);
+    padding-bottom: var(--sp-8);
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .brand-logo-mark {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .brand-wordmark {
+    font-family: var(--font-brand);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .brand-wordmark em {
+    color: var(--text-primary);
+    font-style: normal;
+  }
+
+  .brand-tagline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .brand-version {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     ISOMETRIC NODE ICONS
+  ──────────────────────────────────────────────────────── */
+  .icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-8);
+    align-items: flex-end;
+  }
+
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .icon-item__label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     STATUS BADGES
+  ──────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    letter-spacing: 0.04em;
+  }
+
+  .badge__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .badge--running   { color: var(--green-400); background: rgba(73,212,155,0.1); }
+  .badge--healthy   { color: var(--green-400); background: rgba(73,212,155,0.1); }
+  .badge--online    { color: var(--green-400); background: rgba(73,212,155,0.1); }
+  .badge--offline   { color: var(--red-400);   background: rgba(226,92,117,0.1); }
+  .badge--error     { color: var(--red-400);   background: rgba(226,92,117,0.1); }
+  .badge--warning   { color: var(--amber-400); background: rgba(245,93,60,0.1); }
+  .badge--degraded  { color: var(--amber-400); background: rgba(245,93,60,0.1); }
+  .badge--info      { color: var(--cyan-400);  background: rgba(58,184,240,0.1); }
+  .badge--pending   { color: var(--cyan-400);  background: rgba(58,184,240,0.1); }
+  .badge--stopped   { color: var(--text-muted); background: rgba(40,75,59,0.15); }
+  .badge--neutral   { color: var(--text-muted); background: rgba(40,75,59,0.15); }
+
+  .badge__dot--running, .badge__dot--healthy, .badge__dot--online   { background: var(--green-400); animation: pulse-green 2s ease-in-out infinite; }
+  .badge__dot--offline, .badge__dot--error   { background: var(--red-400); }
+  .badge__dot--warning, .badge__dot--degraded { background: var(--amber-400); animation: pulse-amber 2s ease-in-out infinite; }
+  .badge__dot--info,    .badge__dot--pending  { background: var(--cyan-400); animation: pulse-cyan 2s ease-in-out infinite; }
+  .badge__dot--stopped, .badge__dot--neutral  { background: var(--text-muted); }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(73,212,155,0.5); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 3px rgba(73,212,155,0); }
+  }
+  @keyframes pulse-amber {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245,93,60,0.5); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 3px rgba(245,93,60,0); }
+  }
+  @keyframes pulse-cyan {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(58,184,240,0.5); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 3px rgba(58,184,240,0); }
+  }
+
+  /* container app name tag */
+  .app-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px 3px 6px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    cursor: default;
+    transition: filter var(--dur-mid) var(--ease-out);
+  }
+  .app-tag:hover { filter: brightness(1.15); }
+  .app-tag--green  { background: rgba(73,212,155,0.12); border-color: rgba(73,212,155,0.3);  color: var(--green-300); }
+  .app-tag--red    { background: rgba(226,92,117,0.18); border-color: rgba(226,92,117,0.4);  color: var(--red-300); }
+  .app-tag--amber  { background: rgba(245,93,60,0.15);  border-color: rgba(245,93,60,0.35);  color: var(--amber-300); }
+  .app-tag--cyan   { background: rgba(58,184,240,0.12); border-color: rgba(58,184,240,0.25); color: var(--cyan-300); }
+  .app-tag--muted  { background: rgba(40,75,59,0.2);    border-color: rgba(40,75,59,0.4);    color: var(--text-dim); }
+
+  /* role chip */
+  .role-chip {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: var(--r-sm);
+    border: 1px solid;
+  }
+  .role-chip--app { color: var(--green-400); border-color: var(--green-600); background: rgba(73,212,155,0.08); }
+  .role-chip--rep { color: var(--cyan-400);  border-color: var(--cyan-600);  background: rgba(58,184,240,0.08); }
+  .role-chip--tun { color: var(--amber-400); border-color: var(--amber-600); background: rgba(245,93,60,0.08); }
+  .role-chip--bac { color: var(--text-dim);  border-color: var(--border-strong); background: transparent; }
+
+  /* ────────────────────────────────────────────────────────
+     RESOURCE BARS
+  ──────────────────────────────────────────────────────── */
+  .res-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    min-width: 120px;
+  }
+
+  .res-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .res-bar-header span:last-child {
+    color: var(--text-secondary);
+  }
+
+  /* resource bars — segmented terminal style */
+  .res-bar-track {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    height: 10px;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .res-bar-track::before { display: none; }
+
+  .res-bar-fill {
+    display: none; /* replaced by seg-steps */
+  }
+
+  /* each segment step inside a res-bar-track */
+  .res-bar-track .seg {
+    width: 5px;
+    height: 8px;
+    border-radius: 1px;
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+  }
+  .res-bar-track .seg--on-green { background: rgb(73,212,155); }
+  .res-bar-track .seg--on-amber { background: rgb(245,93,60); }
+  .res-bar-track .seg--on-red   { background: rgb(226,92,117); }
+  .res-bar-track .seg--on-cyan  { background: var(--cyan-400); }
+
+  /* dot-matrix mini bar (like CPU cores display) */
+  .dot-matrix {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .dot-matrix__dot {
+    width: 5px;
+    height: 8px;
+    border-radius: 1px;
+    background: var(--green-700);
+  }
+  .dot-matrix__dot--active { background: rgb(73,212,155); }
+  .dot-matrix__dot--warn   { background: rgb(245,93,60); }
+  .dot-matrix__dot--error  { background: rgb(226,92,117); }
+  .dot-matrix__dot--dim    { background: rgb(20,49,44); }
+
+  /* ────────────────────────────────────────────────────────
+     BUTTONS
+  ──────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 5px 12px;
+    border-radius: var(--r-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--dur-mid) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .btn--primary {
+    background: rgb(73,212,155);
+    color: rgb(9,15,17);
+    border-color: rgb(73,212,155);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(73,212,155,0.4), 0 2px 12px rgba(12,245,149,0.25);
+    text-shadow: none;
+  }
+
+  .btn--primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.06) 2px,
+      rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .btn--primary::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 -100%;
+    width: 60%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s var(--ease-out);
+    pointer-events: none;
+  }
+
+  .btn--primary:hover {
+    background: rgb(113,228,182);
+    border-color: rgb(113,228,182);
+    box-shadow: 0 0 0 1px rgba(73,212,155,0.6), 0 4px 20px rgba(12,245,149,0.4), 0 0 40px rgba(12,245,149,0.15);
+    transform: translateY(-1px);
+  }
+
+  .btn--primary:hover::after {
+    left: 150%;
+  }
+
+  .btn--primary:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 1px rgba(73,212,155,0.4), 0 1px 6px rgba(12,245,149,0.3);
+  }
+
+  .btn--outline {
+    background: transparent;
+    color: var(--green-400);
+    border-color: var(--green-600);
+  }
+  .btn--outline:hover { background: rgba(73,212,155,0.08); border-color: var(--green-400); }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+  }
+  .btn--ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  .btn--danger {
+    background: transparent;
+    color: var(--red-400);
+    border-color: var(--red-600);
+  }
+  .btn--danger:hover { background: rgba(226,92,117,0.1); border-color: var(--red-400); box-shadow: 0 0 12px rgba(226,92,117,0.2); }
+
+  .btn--icon {
+    padding: 5px 7px;
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border-default);
+  }
+  .btn--icon:hover { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-strong); }
+
+  .btn:disabled, .btn--disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn--sm { font-size: 10px; padding: 3px 8px; }
+  .btn--lg { font-size: 12px; padding: 8px 16px; }
+
+  /* ────────────────────────────────────────────────────────
+     INPUTS
+  ──────────────────────────────────────────────────────── */
+  .input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .input-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .input {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: 6px 10px;
+    outline: none;
+    transition: border-color var(--dur-mid) var(--ease-out), box-shadow var(--dur-mid) var(--ease-out);
+    width: 100%;
+  }
+  .input::placeholder { color: var(--text-muted); }
+  .input:hover  { border-color: var(--border-strong); }
+  .input:focus  { border-color: var(--green-400); box-shadow: 0 0 0 2px rgba(73,212,155,0.12); }
+  .input--error { border-color: var(--red-400); }
+  .input--error:focus { box-shadow: 0 0 0 2px rgba(226,92,117,0.12); }
+
+  .input-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .input-hint--error { color: var(--red-400); }
+
+  /* search bar special */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: 5px 12px;
+    min-width: 200px;
+    max-width: 320px;
+    width: 100%;
+  }
+  .search-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    flex: 1;
+  }
+  .search-bar input::placeholder { color: var(--text-muted); }
+  .search-bar__icon { color: var(--text-muted); font-size: 11px; }
+  .search-bar__kbd {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    letter-spacing: 0.04em;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     DATA TABLE
+  ──────────────────────────────────────────────────────── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .data-table thead tr {
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .data-table th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .data-table th .col-meta {
+    color: var(--green-600);
+    font-size: 9px;
+    margin-left: 4px;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background var(--dur-fast);
+  }
+
+  .data-table tbody tr:hover {
+    background: var(--bg-elevated);
+    cursor: pointer;
+  }
+
+  .data-table td {
+    padding: 8px 10px;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .data-table td.td-muted {
+    color: var(--text-muted);
+  }
+
+  .data-table td.td-offline {
+    color: var(--text-disabled);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     TABS
+  ──────────────────────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .tab {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color var(--dur-mid), border-color var(--dur-mid);
+    user-select: none;
+  }
+
+  .tab:hover { color: var(--text-secondary); }
+
+  .tab--active {
+    color: var(--text-primary);
+    border-bottom-color: var(--green-400);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     PANEL / CARD
+  ──────────────────────────────────────────────────────── */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+
+  .panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-default);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .panel__header-actions {
+    display: flex;
+    gap: var(--sp-3);
+    align-items: center;
+  }
+
+  .panel__body {
+    padding: var(--sp-5);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     TERMINAL / LOG VIEWER
+  ──────────────────────────────────────────────────────── */
+  .terminal {
+    background: var(--bg-void);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: var(--sp-5);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    min-height: 140px;
+    overflow: auto;
+  }
+
+  .log-line { display: flex; gap: var(--sp-5); }
+  .log-line__time { color: var(--text-disabled); flex-shrink: 0; }
+  .log-line__level { width: 36px; flex-shrink: 0; font-weight: 600; }
+  .log-line__level--info  { color: var(--cyan-400); }
+  .log-line__level--warn  { color: var(--amber-400); }
+  .log-line__level--error { color: var(--red-400); }
+  .log-line__level--debug { color: var(--text-muted); }
+  .log-line__msg  { color: var(--text-primary); }
+  .log-line__msg--dim { color: var(--text-muted); }
+
+  .terminal-prompt {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-4);
+  }
+  .terminal-prompt__caret { color: var(--green-400); animation: blink 1.2s step-end infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .terminal-prompt__text  { color: var(--text-primary); }
+
+  /* ────────────────────────────────────────────────────────
+     NOTIFICATION / ALERT TOAST
+  ──────────────────────────────────────────────────────── */
+  .toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    min-width: 280px;
+    max-width: 400px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .toast--success { border-left: 3px solid rgb(73,212,155); }
+  .toast--error   { border-left: 3px solid rgb(226,92,117); }
+  .toast--warning { border-left: 3px solid rgb(245,93,60); }
+  .toast--info    { border-left: 3px solid var(--cyan-400); }
+
+  .toast__icon { font-size: 13px; flex-shrink: 0; margin-top: 0; }
+  .toast__body { flex: 1; }
+  .toast__title { color: var(--text-primary); font-weight: 600; margin-bottom: 4px; }
+  .toast__msg   { color: var(--text-muted); font-size: 10px; line-height: 1.5; }
+  .toast__time  { font-size: 10px; color: var(--text-disabled); flex-shrink: 0; }
+
+  /* ────────────────────────────────────────────────────────
+     NODE INFO CARD (detail header)
+  ──────────────────────────────────────────────────────── */
+  .node-info-card {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-8);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: var(--sp-6) var(--sp-8);
+    flex-wrap: wrap;
+    overflow: hidden;
+  }
+
+  .node-info-card__icon { flex-shrink: 0; }
+
+  .node-info-card__status {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .node-info-card__divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border-default);
+    flex-shrink: 0;
+  }
+
+  .node-info-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .node-info-card__key {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .node-info-card__val {
+    font-size: 12px;
+    color: var(--text-primary);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     MODAL
+  ──────────────────────────────────────────────────────── */
+  .modal-backdrop {
+    background: rgba(7,14,12,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-lg);
+    padding: var(--sp-8);
+  }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .modal__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .modal__close {
+    font-size: 16px;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: var(--r-sm);
+  }
+  .modal__close:hover { color: var(--text-primary); background: var(--bg-elevated); }
+
+  .modal__body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--sp-3);
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-default);
+    background: var(--bg-elevated);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     COMMAND PALETTE
+  ──────────────────────────────────────────────────────── */
+  .cmd-palette {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cmd-palette__input-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .cmd-palette__input-row svg { color: var(--text-muted); flex-shrink: 0; }
+
+  .cmd-palette__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+  .cmd-palette__input::placeholder { color: var(--text-muted); }
+
+  .cmd-palette__results {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .cmd-result {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background var(--dur-fast);
+  }
+  .cmd-result:hover, .cmd-result--active { background: var(--bg-elevated); }
+  .cmd-result__icon { width: 24px; text-align: center; color: var(--text-muted); }
+  .cmd-result__label { font-size: 12px; color: var(--text-primary); flex: 1; }
+  .cmd-result__meta  { font-size: 10px; color: var(--text-muted); }
+  .cmd-result__kbd   {
+    font-size: 10px; color: var(--text-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .cmd-palette__footer {
+    display: flex;
+    gap: var(--sp-6);
+    padding: 6px 16px;
+    border-top: 1px solid var(--border-default);
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+  }
+
+  .cmd-palette__footer span { display: flex; align-items: center; gap: 4px; }
+
+  /* ────────────────────────────────────────────────────────
+     NAVIGATION (top bar)
+  ──────────────────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: 0 var(--sp-6);
+    height: 48px;
+    overflow: hidden;
+  }
+
+  .topbar__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+
+  .topbar__workspace {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgb(73,212,155);
+    border: 1px solid rgb(73,212,155);
+    border-radius: var(--r-md);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    cursor: pointer;
+    color: rgb(9,15,17);
+    transition: background var(--dur-mid), border-color var(--dur-mid);
+  }
+  .topbar__workspace:hover { background: rgb(113,228,182); border-color: rgb(113,228,182); }
+
+  .topbar__workspace__sep {
+    width: 1px;
+    height: 12px;
+    background: rgba(9,15,17,0.3);
+    margin: 0 8px;
+    flex-shrink: 0;
+  }
+
+  .topbar__workspace__caret {
+    color: rgb(9,15,17);
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+  }
+
+  .topbar__center { flex: 1; display: flex; justify-content: center; }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    flex-shrink: 0;
+  }
+
+  .topbar__indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .topbar__indicator__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(245,93,60);
+  }
+
+  .topbar__icon-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    transition: background var(--dur-mid), color var(--dur-mid);
+    font-size: 14px;
+  }
+  .topbar__icon-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* ────────────────────────────────────────────────────────
+     SIDEBAR LIST ITEM
+  ──────────────────────────────────────────────────────── */
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: 6px 8px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: background var(--dur-fast);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+  }
+  .sidebar-item:hover { background: var(--bg-hover); }
+  .sidebar-item--active { background: var(--bg-selected); border-color: var(--border-strong); }
+  .sidebar-item--offline { opacity: 0.5; }
+  .sidebar-item__name { flex: 1; }
+  .sidebar-item__status { font-size: 10px; }
+  .sidebar-item__status--error   { color: var(--red-400); }
+  .sidebar-item__status--warning { color: rgb(245,93,60); }
+
+  /* ────────────────────────────────────────────────────────
+     MOTION DEMOS
+  ──────────────────────────────────────────────────────── */
+  .motion-demo {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-8);
+    flex-wrap: wrap;
+  }
+
+  .motion-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* spinner */
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border-default);
+    border-top-color: var(--green-400);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-hover) 50%, var(--bg-elevated) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--r-md);
+    height: 12px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* scan line (decorative terminal effect) */
+  .scanline-wrap {
+    position: relative;
+    overflow: hidden;
+    width: 100px; height: 40px;
+    background: var(--bg-void);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+  }
+  .scanline-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: rgba(73,212,155,0.3);
+    animation: scan 2s linear infinite;
+  }
+  @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+  /* segmented terminal-style bars */
+  .seg-bar {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .seg-bar__step {
+    width: 6px;
+    height: 10px;
+    border-radius: 1px;
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+    transition: background var(--dur-mid);
+  }
+  .seg-bar__step--on-green { background: rgb(73,212,155); }
+  .seg-bar__step--on-amber { background: rgb(245,93,60); }
+  .seg-bar__step--on-red   { background: rgb(226,92,117); }
+  .seg-bar__step--on-cyan  { background: var(--cyan-400); }
+
+  /* progress fill — segmented steps */
+  .progress-demo {
+    width: 140px;
+    height: 12px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .progress-demo__step {
+    width: 8px;
+    height: 10px;
+    border-radius: 1px;
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+  }
+  .progress-demo__step--on {
+    background: rgb(73,212,155);
+  }
+  @keyframes seg-appear {
+    from { opacity: 0; transform: scaleY(0.4); }
+    to   { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* row entry animation */
+  .row-enter { animation: row-in 0.3s var(--ease-out) forwards; opacity: 0; }
+  @keyframes row-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .row-enter:nth-child(2) { animation-delay: 0.06s; }
+  .row-enter:nth-child(3) { animation-delay: 0.12s; }
+
+  /* glow pulse on status */
+  .glow-pulse {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--green-400);
+    box-shadow: 0 0 0 0 rgba(12,245,149,0.6);
+    animation: glow-ring 1.8s ease-out infinite;
+    opacity: 0.85;
+  }
+  @keyframes glow-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(12,245,149,0.5); }
+    70%  { box-shadow: 0 0 0 12px rgba(12,245,149,0); }
+    100% { box-shadow: 0 0 0 0 rgba(12,245,149,0); }
+  }
+
+  /* ────────────────────────────────────────────────────────
+     TYPE SCALE
+  ──────────────────────────────────────────────────────── */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-8);
+    padding: var(--sp-4) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .type-row__meta {
+    width: 160px;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .type-row__sample {
+    flex: 1;
+    color: var(--text-primary);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     SPACING SCALE
+  ──────────────────────────────────────────────────────── */
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    padding: var(--sp-3) 0;
+  }
+
+  .spacing-row__label {
+    width: 80px;
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .spacing-row__block {
+    background: rgba(73,212,155,0.25);
+    border: 1px solid rgb(10,60,44);
+    height: 12px;
+    border-radius: var(--r-sm);
+    flex-shrink: 0;
+  }
+
+  .spacing-row__val {
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     AUDIT LOG ROW
+  ──────────────────────────────────────────────────────── */
+  .audit-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-5);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .audit-row__time  { color: var(--text-disabled); flex-shrink: 0; width: 90px; }
+  .audit-row__actor { color: var(--cyan-400); flex-shrink: 0; width: 80px; }
+  .audit-row__event { color: var(--text-primary); flex: 1; }
+  .audit-row__event em { font-style: normal; color: rgb(73,212,155); }
+  .audit-row__event .highlight-red { color: rgb(226,92,117); }
+  .audit-row__target { color: var(--text-muted); flex-shrink: 0; }
+
+  /* ────────────────────────────────────────────────────────
+     ALERT ITEM
+  ──────────────────────────────────────────────────────── */
+  .alert-item {
+    display: flex;
+    gap: var(--sp-4);
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    transition: background var(--dur-mid);
+    cursor: pointer;
+  }
+  .alert-item:hover { background: var(--bg-elevated); }
+  .alert-item--unread { border-left: 2px solid rgb(73,212,155); }
+
+  .alert-item__indicator {
+    width: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 3px;
+  }
+  .alert-item__dot { width: 6px; height: 6px; border-radius: 50%; }
+  .alert-item__body { flex: 1; }
+  .alert-item__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .alert-item__title { color: var(--text-primary); font-weight: 600; }
+  .alert-item__time  { color: var(--text-disabled); font-size: 10px; }
+  .alert-item__msg   { color: var(--text-muted); font-size: 10px; line-height: 1.5; }
+
+  /* ────────────────────────────────────────────────────────
+     RESOURCE HOVER POPOVER
+  ──────────────────────────────────────────────────────── */
+  .res-popover-wrap {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    min-width: 120px;
+  }
+
+  .res-popover {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 200;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    padding: 12px 14px;
+    min-width: 220px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgb(40,75,59);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity var(--dur-mid) var(--ease-out), transform var(--dur-mid) var(--ease-out);
+  }
+
+  .res-popover-wrap:hover .res-popover {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .res-popover__title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .res-popover__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .res-popover__total-label { color: var(--text-muted); font-size: 10px; }
+  .res-popover__total-val   { color: var(--text-primary); font-weight: 600; font-size: 12px; }
+
+  .res-popover__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+  }
+
+  .res-popover__row-name  { color: var(--text-secondary); flex: 1; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
+  .res-popover__row-bar   { flex: 1; height: 3px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden; min-width: 48px; }
+  .res-popover__row-fill  { height: 100%; border-radius: 2px; }
+  .res-popover__row-val   { color: var(--text-secondary); font-size: 10px; text-align: right; min-width: 36px; }
+  .res-popover__row-val--warn  { color: rgb(245,93,60); }
+  .res-popover__row-val--error { color: rgb(226,92,117); }
+
+  .res-popover__footer {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .res-popover-wrap:hover .res-bar-track {
+    outline: 1px solid var(--border-strong);
+    outline-offset: 1px;
+  }
+
+  /* disk cylinder array */
+  .disk-array {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .disk-cyl {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .disk-cyl__body {
+    width: 8px;
+    height: 12px;
+    border-radius: 2px 2px 1px 1px;
+    border: 1px solid rgb(40,75,59);
+    background: var(--bg-elevated);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .disk-cyl__fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 1px 1px;
+    transition: height var(--dur-slow) var(--ease-out);
+  }
+
+  .disk-cyl__cap {
+    width: 8px;
+    height: 3px;
+    border-radius: 50%;
+    border: 1px solid rgb(40,75,59);
+    background: var(--bg-elevated);
+  }
+
+  .disk-cyl--active .disk-cyl__body { border-color: rgb(73,212,155); }
+  .disk-cyl--active .disk-cyl__cap  { border-color: rgb(73,212,155); background: rgba(73,212,155,0.3); }
+  .disk-cyl--warn   .disk-cyl__body { border-color: rgb(245,93,60); }
+  .disk-cyl--warn   .disk-cyl__cap  { border-color: rgb(245,93,60); background: rgba(245,93,60,0.3); }
+  .disk-cyl--error  .disk-cyl__body { border-color: rgb(226,92,117); }
+  .disk-cyl--error  .disk-cyl__cap  { border-color: rgb(226,92,117); background: rgba(226,92,117,0.3); }
+  .disk-cyl--offline .disk-cyl__body { border-color: var(--border-subtle); opacity: 0.4; }
+  .disk-cyl--offline .disk-cyl__cap  { border-color: var(--border-subtle); opacity: 0.4; }
+
+
+  .ram-sticks {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+  }
+
+  .ram-stick {
+    width: 6px;
+    height: 14px;
+    border-radius: 1px;
+    border: 1px solid rgb(40,75,59);
+    background: var(--bg-elevated);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .ram-stick::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 0 0 1px 1px;
+    background: rgb(40,75,59);
+  }
+
+  .ram-stick--active {
+    border-color: rgb(73,212,155);
+    background: rgba(73,212,155,0.15);
+  }
+
+  .ram-stick--active::before {
+    background: rgb(73,212,155);
+  }
+
+  .ram-stick--warn {
+    border-color: rgb(245,93,60);
+    background: rgba(245,93,60,0.15);
+  }
+
+  .ram-stick--warn::before {
+    background: rgb(245,93,60);
+  }
+
+  .ram-stick--error {
+    border-color: rgb(226,92,117);
+    background: rgba(226,92,117,0.15);
+  }
+
+  .ram-stick--error::before {
+    background: rgb(226,92,117);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     DIVIDER UTIL
+  ──────────────────────────────────────────────────────── */
+  .divider { height: 1px; background: var(--border-default); margin: var(--sp-2) 0; }
+
+  /* ────────────────────────────────────────────────────────
+     UTILITY CLASSES
+  ──────────────────────────────────────────────────────── */
+  .text-green  { color: var(--green-400); }
+  .text-red    { color: var(--red-400); }
+  .text-amber  { color: var(--amber-400); }
+  .text-cyan   { color: var(--cyan-400); }
+  .text-muted  { color: var(--text-muted); }
+  .text-second { color: var(--text-secondary); }
+  .mono        { font-family: var(--font-mono); }
+  .brand       { font-family: var(--font-brand); }
+
+  /* two-column layout helper */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-8); }
+
+  @media (max-width: 700px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+  }
+
+  /* page nav */
+  .page-nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    z-index: 100;
+  }
+
+  .page-nav a {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    transition: color var(--dur-mid);
+  }
+  .page-nav a::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--border-default);
+    transition: width var(--dur-mid), background var(--dur-mid);
+  }
+  .page-nav a:hover { color: var(--text-secondary); }
+  .page-nav a:hover::before { width: 28px; background: rgb(73,212,155); }
+
+</style>
+</head>
+<body>
+
+<!-- Fixed page nav -->
+<nav class="page-nav">
+  <a href="#colors">Colors</a>
+  <a href="#type">Type</a>
+  <a href="#spacing">Spacing</a>
+  <a href="#icons">Icons</a>
+  <a href="#badges">Badges</a>
+  <a href="#buttons">Buttons</a>
+  <a href="#inputs">Inputs</a>
+  <a href="#tables">Tables</a>
+  <a href="#panels">Panels</a>
+  <a href="#terminal">Terminal</a>
+  <a href="#alerts">Alerts</a>
+  <a href="#modals">Modals</a>
+  <a href="#motion">Motion</a>
+  <a href="#nav">Nav</a>
+</nav>
+
+<div class="ds-root">
+
+  <!-- ── BRAND HEADER ── -->
+  <header class="brand-hero">
+    <!-- FloatLab Logo mark — exact SVG geometry from uploaded asset, scaled to fit -->
+    <svg class="brand-logo-mark" viewBox="0 0 294 232" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M119.054 139.969L245.054 67.9691C249.358 65.5097 254.642 65.5097 258.946 67.9691L287.011 84.0061C290.101 85.772 290.101 90.228 287.011 91.9939L161.054 163.969C156.692 166.462 154 171.101 154 176.125V224.073C154 227.605 150.184 229.82 147.118 228.067L119.054 212.031C114.692 209.538 112 204.899 112 199.875V152.125C112 147.101 114.692 142.462 119.054 139.969Z" fill="rgb(73,212,155)"/>
+      <path d="M63.054 107.969L189.054 35.9691C193.358 33.5097 198.642 33.5097 202.946 35.9691L231.011 52.0061C234.101 53.772 234.101 58.228 231.011 59.9939L105.054 131.969C100.692 134.462 98 139.101 98 144.125V192.073C98 195.605 94.1844 197.82 91.1178 196.067L63.0541 180.031C58.692 177.538 56 172.899 56 167.875V120.125C56 115.101 58.692 110.462 63.054 107.969Z" fill="rgb(73,212,155)"/>
+      <path d="M7.05405 75.9691L133.054 3.96911C137.358 1.50965 142.642 1.50965 146.946 3.96911L175.011 20.0061C178.101 21.772 178.101 26.228 175.011 27.9939L49.0541 99.9691C44.692 102.462 42 107.101 42 112.125V160.073C42 163.605 38.1844 165.82 35.1178 164.067L7.05405 148.031C2.692 145.538 0 140.899 0 135.875V88.1245C0 83.1005 2.692 78.4617 7.05405 75.9691Z" fill="rgb(73,212,155)"/>
+    </svg>
+    <div>
+      <div class="brand-wordmark">FloatLab</div>
+      <div class="brand-tagline">Design System v1.0 — Dark Mode — IBM Plex Mono + Manrope</div>
+    </div>
+    <div class="brand-version">
+      <div>Cavslab / FloatLab</div>
+      <div style="color: rgb(73,212,155); margin-top:4px;">rev 2025.1</div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: COLORS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="colors">
+    <div class="ds-section-title"><span>01</span>Color Tokens</div>
+
+    <div class="ds-example">
+      <div class="ds-example__label">Backgrounds</div>
+      <div class="token-grid">
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(9,15,17); border: 1px solid rgb(40,75,59);"></div>
+          <div class="token-swatch__label">--bg-void</div>
+          <div class="token-swatch__value">rgb(9,15,17)</div>
+        </div>
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(19,28,27);"></div>
+          <div class="token-swatch__label">--bg-base</div>
+          <div class="token-swatch__value">rgb(19,28,27)</div>
+        </div>
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(13,26,27);"></div>
+          <div class="token-swatch__label">--bg-panel</div>
+          <div class="token-swatch__value">rgb(13,26,27)</div>
+        </div>
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(20,49,44);"></div>
+          <div class="token-swatch__label">--bg-elevated</div>
+          <div class="token-swatch__value">rgb(20,49,44)</div>
+        </div>
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(28,56,50);"></div>
+          <div class="token-swatch__label">--bg-hover</div>
+          <div class="token-swatch__value">rgb(28,56,50)</div>
+        </div>
+        <div class="token-swatch">
+          <div class="token-swatch__color" style="background:rgb(32,64,56);"></div>
+          <div class="token-swatch__label">--bg-selected</div>
+          <div class="token-swatch__value">rgb(32,64,56)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Primary — Green</div>
+      <div class="token-grid">
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(212,249,235);"></div><div class="token-swatch__label">green-100</div><div class="token-swatch__value">rgb(212,249,235)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(160,240,210);"></div><div class="token-swatch__label">green-200</div><div class="token-swatch__value">rgb(160,240,210)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(113,228,182);"></div><div class="token-swatch__label">green-300</div><div class="token-swatch__value">rgb(113,228,182)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(73,212,155); outline: 2px solid rgb(73,212,155); outline-offset: 2px;"></div><div class="token-swatch__label">green-400 ★</div><div class="token-swatch__value">rgb(73,212,155)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(40,160,115);"></div><div class="token-swatch__label">green-500</div><div class="token-swatch__value">rgb(40,160,115)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(20,100,72);"></div><div class="token-swatch__label">green-600</div><div class="token-swatch__value">rgb(20,100,72)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(10,60,44);"></div><div class="token-swatch__label">green-700</div><div class="token-swatch__value">rgb(10,60,44)</div></div>
+        <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(5,32,24);"></div><div class="token-swatch__label">green-800</div><div class="token-swatch__value">rgb(5,32,24)</div></div>
+      </div>
+    </div>
+
+    <div class="three-col" style="margin-top: var(--sp-5);">
+      <div class="ds-example">
+        <div class="ds-example__label">Error — Pink/Red</div>
+        <div class="ds-col">
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(240,160,175);"></div><div class="token-swatch__label">red-300</div><div class="token-swatch__value">rgb(240,160,175)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(226,92,117); outline: 2px solid rgb(226,92,117); outline-offset: 2px;"></div><div class="token-swatch__label">red-400 ★</div><div class="token-swatch__value">rgb(226,92,117)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(180,56,80);"></div><div class="token-swatch__label">red-500</div><div class="token-swatch__value">rgb(180,56,80)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(123,0,23);"></div><div class="token-swatch__label">red-600</div><div class="token-swatch__value">rgb(123,0,23)</div></div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Warning — Amber</div>
+        <div class="ds-col">
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(255,180,140);"></div><div class="token-swatch__label">amber-300</div><div class="token-swatch__value">rgb(255,180,140)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(245,93,60); outline: 2px solid rgb(245,93,60); outline-offset: 2px;"></div><div class="token-swatch__label">amber-400 ★</div><div class="token-swatch__value">rgb(245,93,60)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(196,60,32);"></div><div class="token-swatch__label">amber-500</div><div class="token-swatch__value">rgb(196,60,32)</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:rgb(140,32,12);"></div><div class="token-swatch__label">amber-600</div><div class="token-swatch__value">rgb(140,32,12)</div></div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Info — Cyan</div>
+        <div class="ds-col">
+          <div class="token-swatch"><div class="token-swatch__color" style="background:#88ddf5;"></div><div class="token-swatch__label">cyan-300</div><div class="token-swatch__value">#88ddf5</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:#3ab8f0; outline: 2px solid #3ab8f0; outline-offset: 2px;"></div><div class="token-swatch__label">cyan-400 ★</div><div class="token-swatch__value">#3ab8f0</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:#1a8bbf;"></div><div class="token-swatch__label">cyan-500</div><div class="token-swatch__value">#1a8bbf</div></div>
+          <div class="token-swatch"><div class="token-swatch__color" style="background:#0d5e82;"></div><div class="token-swatch__label">cyan-600</div><div class="token-swatch__value">#0d5e82</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Text Scale</div>
+      <div class="ds-col">
+        <div class="token-swatch" style="flex-direction: row; align-items: center; gap: 12px;">
+          <div style="width:120px; font-size:10px; color: var(--text-muted);">--text-primary</div>
+          <div style="font-size: 14px; color: rgb(255,255,255); font-family: var(--font-mono);">NODE: hv01 — Running</div>
+          <div style="margin-left:auto; font-size:10px; color: var(--text-muted);">rgb(255,255,255)</div>
+        </div>
+        <div class="token-swatch" style="flex-direction: row; align-items: center; gap: 12px;">
+          <div style="width:120px; font-size:10px; color: var(--text-muted);">--text-secondary</div>
+          <div style="font-size: 14px; color: rgb(240,240,240); font-family: var(--font-mono);">NODE: hv01 — Running</div>
+          <div style="margin-left:auto; font-size:10px; color: var(--text-muted);">rgb(240,240,240)</div>
+        </div>
+        <div class="token-swatch" style="flex-direction: row; align-items: center; gap: 12px;">
+          <div style="width:120px; font-size:10px; color: var(--text-muted);">--text-muted</div>
+          <div style="font-size: 14px; color: rgb(40,75,59); font-family: var(--font-mono);">NODE: hv01 — Running</div>
+          <div style="margin-left:auto; font-size:10px; color: var(--text-muted);">rgb(40,75,59)</div>
+        </div>
+        <div class="token-swatch" style="flex-direction: row; align-items: center; gap: 12px;">
+          <div style="width:120px; font-size:10px; color: var(--text-muted);">--text-disabled</div>
+          <div style="font-size: 14px; color: rgb(56,96,76); font-family: var(--font-mono);">NODE: hv01 — Running</div>
+          <div style="margin-left:auto; font-size:10px; color: var(--text-muted);">rgb(56,96,76)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: TYPOGRAPHY
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="type">
+    <div class="ds-section-title"><span>02</span>Typography</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Type Scale — IBM Plex Mono (UI default)</div>
+
+      <div class="type-row">
+        <div class="type-row__meta">10px / 600 / 0.1em<br>Section label</div>
+        <div class="type-row__sample" style="font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color: var(--text-muted);">MESH NODES</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">11px / 500 / 0.06em<br>UI label / tab</div>
+        <div class="type-row__sample" style="font-size:11px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase;">LOGS &nbsp; TERMINAL &nbsp; COMPOSE</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">11px / 400<br>Body / data</div>
+        <div class="type-row__sample" style="font-size:11px;">NODE: hv01 &nbsp;•&nbsp; IP: 10.0.5.2 &nbsp;•&nbsp; CPU: Ryzen 5600x @ 5.1ghz</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">12px / 400<br>Input / code</div>
+        <div class="type-row__sample" style="font-size:12px;">docker compose up -d --force-recreate minecraft</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__meta">13px / 600<br>Emphasis / value</div>
+        <div class="type-row__sample" style="font-size:13px; font-weight:600;">32 GiB &nbsp; 14 TB &nbsp; 12T</div>
+      </div>
+    </div>
+
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Brand Type — Manrope Bold 700 (wordmark / logo only)</div>
+      <div class="type-row">
+        <div class="type-row__meta">28px / 700<br>Wordmark</div>
+        <div class="type-row__sample" style="font-family: var(--font-brand); font-size:28px; font-weight:700; letter-spacing:-0.02em; color: var(--text-primary);">FloatLab</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: SPACING
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="spacing">
+    <div class="ds-section-title"><span>03</span>Spacing &amp; Radius</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Spacing Scale</div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-1 / 4px</div><div class="spacing-row__block" style="width:4px"></div><div class="spacing-row__val">4px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-2 / 8px</div><div class="spacing-row__block" style="width:8px"></div><div class="spacing-row__val">8px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-3 / 12px</div><div class="spacing-row__block" style="width:12px"></div><div class="spacing-row__val">12px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-4 / 16px</div><div class="spacing-row__block" style="width:16px"></div><div class="spacing-row__val">16px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-5 / 20px</div><div class="spacing-row__block" style="width:20px"></div><div class="spacing-row__val">20px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-6 / 24px</div><div class="spacing-row__block" style="width:24px"></div><div class="spacing-row__val">24px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-7 / 28px</div><div class="spacing-row__block" style="width:28px"></div><div class="spacing-row__val">28px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-8 / 32px</div><div class="spacing-row__block" style="width:32px"></div><div class="spacing-row__val">32px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-9 / 40px</div><div class="spacing-row__block" style="width:40px"></div><div class="spacing-row__val">40px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-10 / 48px</div><div class="spacing-row__block" style="width:48px"></div><div class="spacing-row__val">48px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-11 / 56px</div><div class="spacing-row__block" style="width:56px"></div><div class="spacing-row__val">56px</div></div>
+        <div class="spacing-row"><div class="spacing-row__label">--sp-12 / 64px</div><div class="spacing-row__block" style="width:64px"></div><div class="spacing-row__val">64px</div></div>
+      </div>
+      <div class="ds-col">
+        <div class="ds-example">
+          <div class="ds-example__label">Border Radius</div>
+          <div class="ds-row" style="align-items: center;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div style="width:40px; height:40px; background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius:2px;"></div>
+              <div style="font-size:10px; color:var(--text-muted);">--r-sm<br>2px</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div style="width:40px; height:40px; background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius:4px;"></div>
+              <div style="font-size:10px; color:var(--text-muted);">--r-md<br>4px</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div style="width:40px; height:40px; background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius:6px;"></div>
+              <div style="font-size:10px; color:var(--text-muted);">--r-lg<br>6px</div>
+            </div>
+          </div>
+        </div>
+        <div class="ds-example">
+          <div class="ds-example__label">Border Tokens</div>
+          <div class="ds-col">
+            <div style="height:1px; background: rgb(19,28,27);"></div>
+            <div style="font-size:10px; color:var(--text-muted);">--border-subtle rgb(19,28,27)</div>
+            <div style="height:1px; background: rgb(40,75,59);"></div>
+            <div style="font-size:10px; color:var(--text-muted);">--border-default rgb(40,75,59)</div>
+            <div style="height:1px; background: rgb(56,96,76);"></div>
+            <div style="font-size:10px; color:var(--text-muted);">--border-strong rgb(56,96,76)</div>
+            <div style="height:1px; background: rgb(73,212,155);"></div>
+            <div style="font-size:10px; color:var(--text-muted);">--border-focus rgb(73,212,155)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: ICONS / ISOMETRIC
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="icons">
+    <div class="ds-section-title"><span>04</span>Isometric Icons</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Node / Container Iconography — Isometric Low-Poly</div>
+      <div class="icon-grid">
+
+        <!-- Node icon — exact Figma SVG paths (rgb(73,212,155)) with glow -->
+        <div class="icon-item">
+          <svg width="48" height="40" viewBox="0 0 32.974 27.197" fill="none" style="filter: drop-shadow(0px 2.2px 11px rgba(12,245,149,0.3))">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Node<br>Active</div>
+        </div>
+
+        <!-- Node offline — exact paths, red fill -->
+        <div class="icon-item">
+          <svg width="48" height="40" viewBox="0 0 32.974 27.197" fill="none">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(226,92,117)"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(226,92,117)" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Node<br>Offline</div>
+        </div>
+
+        <!-- Container running — same paths, smaller -->
+        <div class="icon-item">
+          <svg width="36" height="30" viewBox="0 0 32.974 27.197" fill="none" style="filter: drop-shadow(0px 2.2px 11px rgba(12,245,149,0.3))">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Container<br>Running</div>
+        </div>
+
+        <!-- Container error — red -->
+        <div class="icon-item">
+          <svg width="36" height="30" viewBox="0 0 32.974 27.197" fill="none">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(226,92,117)"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(180,56,80)" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Container<br>Error</div>
+        </div>
+
+        <!-- Container warning — orange -->
+        <div class="icon-item">
+          <svg width="36" height="30" viewBox="0 0 32.974 27.197" fill="none">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(245,93,60)"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(196,60,32)" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Container<br>Warning</div>
+        </div>
+
+        <!-- Container stopped — muted -->
+        <div class="icon-item">
+          <svg width="36" height="30" viewBox="0 0 32.974 27.197" fill="none">
+            <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(40,75,59)" opacity="0.6"/>
+            <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(20,49,44)" opacity="0.6" transform="translate(5.413,3.14)"/>
+          </svg>
+          <div class="icon-item__label">Container<br>Stopped</div>
+        </div>
+
+        <!-- FloatLab logo mark — exact SVG paths -->
+        <div class="icon-item">
+          <svg width="48" height="38" viewBox="0 0 294 232" fill="none">
+            <path d="M119.054 139.969L245.054 67.9691C249.358 65.5097 254.642 65.5097 258.946 67.9691L287.011 84.0061C290.101 85.772 290.101 90.228 287.011 91.9939L161.054 163.969C156.692 166.462 154 171.101 154 176.125V224.073C154 227.605 150.184 229.82 147.118 228.067L119.054 212.031C114.692 209.538 112 204.899 112 199.875V152.125C112 147.101 114.692 142.462 119.054 139.969Z" fill="rgb(73,212,155)"/>
+            <path d="M63.054 107.969L189.054 35.9691C193.358 33.5097 198.642 33.5097 202.946 35.9691L231.011 52.0061C234.101 53.772 234.101 58.228 231.011 59.9939L105.054 131.969C100.692 134.462 98 139.101 98 144.125V192.073C98 195.605 94.1844 197.82 91.1178 196.067L63.0541 180.031C58.692 177.538 56 172.899 56 167.875V120.125C56 115.101 58.692 110.462 63.054 107.969Z" fill="rgb(73,212,155)"/>
+            <path d="M7.05405 75.9691L133.054 3.96911C137.358 1.50965 142.642 1.50965 146.946 3.96911L175.011 20.0061C178.101 21.772 178.101 26.228 175.011 27.9939L49.0541 99.9691C44.692 102.462 42 107.101 42 112.125V160.073C42 163.605 38.1844 165.82 35.1178 164.067L7.05405 148.031C2.692 145.538 0 140.899 0 135.875V88.1245C0 83.1005 2.692 78.4617 7.05405 75.9691Z" fill="rgb(73,212,155)"/>
+          </svg>
+          <div class="icon-item__label">FloatLab<br>Logo mark</div>
+        </div>
+
+        <!-- Size variants -->
+        <div class="icon-item">
+          <div class="ds-row" style="align-items: flex-end; gap: 8px;">
+            <svg width="16" height="13" viewBox="0 0 32.974 27.197" fill="none">
+              <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/>
+              <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/>
+            </svg>
+            <svg width="24" height="20" viewBox="0 0 32.974 27.197" fill="none">
+              <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/>
+              <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/>
+            </svg>
+            <svg width="33" height="27" viewBox="0 0 32.974 27.197" fill="none">
+              <path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/>
+              <path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/>
+            </svg>
+          </div>
+          <div class="icon-item__label">Size variants<br>sm / md / lg</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: BADGES & STATUS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="badges">
+    <div class="ds-section-title"><span>05</span>Badges, Status &amp; Tags</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Status Badges</div>
+        <div class="ds-col">
+          <div class="badge badge--running"><span class="badge__dot badge__dot--running"></span>Running</div>
+          <div class="badge badge--healthy"><span class="badge__dot badge__dot--healthy"></span>Healthy</div>
+          <div class="badge badge--online"><span class="badge__dot badge__dot--online"></span>Online</div>
+          <div class="badge badge--offline"><span class="badge__dot badge__dot--offline"></span>Offline</div>
+          <div class="badge badge--error"><span class="badge__dot badge__dot--error"></span>Error</div>
+          <div class="badge badge--warning"><span class="badge__dot badge__dot--warning"></span>Not Replicating</div>
+          <div class="badge badge--degraded"><span class="badge__dot badge__dot--degraded"></span>Degraded</div>
+          <div class="badge badge--pending"><span class="badge__dot badge__dot--pending"></span>Pending</div>
+          <div class="badge badge--stopped"><span class="badge__dot badge__dot--stopped"></span>Stopped</div>
+        </div>
+      </div>
+      <div class="ds-col">
+        <div class="ds-example">
+          <div class="ds-example__label">Container App Tags</div>
+          <div class="ds-col">
+            <div class="app-tag app-tag--green">
+              <svg width="12" height="10" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/></svg>
+              Immich
+            </div>
+            <div class="app-tag app-tag--red">
+              <svg width="12" height="10" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(226,92,117)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(180,56,80)" transform="translate(5.413,3.14)"/></svg>
+              Cloudflare-ddns
+            </div>
+            <div class="app-tag app-tag--amber">
+              <svg width="12" height="10" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(245,93,60)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(196,60,32)" transform="translate(5.413,3.14)"/></svg>
+              Minecraft-Public
+            </div>
+            <div class="app-tag app-tag--muted">
+              <svg width="12" height="10" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(40,75,59)" opacity="0.7"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(20,49,44)" opacity="0.7" transform="translate(5.413,3.14)"/></svg>
+              Minecraft-Local1
+            </div>
+          </div>
+        </div>
+        <div class="ds-example">
+          <div class="ds-example__label">Role Chips</div>
+          <div class="ds-row">
+            <span class="role-chip role-chip--app">APP</span>
+            <span class="role-chip role-chip--rep">REP</span>
+            <span class="role-chip role-chip--tun">TUN</span>
+            <span class="role-chip role-chip--bac">BAC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: RESOURCE BARS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section">
+    <div class="ds-section-title"><span>06</span>Resource Indicators</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Progress / Resource Bars</div>
+      <div class="ds-row" style="flex-wrap: wrap; gap: 24px;">
+        <div class="res-bar-wrap">
+          <div class="res-bar-header"><span>CPU</span><span>6C / 12T</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">22% utilization</div>
+        </div>
+        <div class="res-bar-wrap">
+          <div class="res-bar-header"><span>MEM</span><span>32 GiB</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">58% — 18.6 GiB used</div>
+        </div>
+        <div class="res-bar-wrap">
+          <div class="res-bar-header"><span>STORAGE</span><span>14 TB</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--red-400);">91% — critical</div>
+        </div>
+        <div class="res-bar-wrap">
+          <div class="res-bar-header"><span>NET</span><span>2.5GbE</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-cyan"></div><div class="seg seg--on-cyan"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">298 Mb/s</div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Resource Hover Popovers — hover any bar to inspect</div>
+      <div class="ds-row" style="flex-wrap: wrap; gap: 32px; padding-bottom: 80px;">
+
+        <!-- MEM popover -->
+        <div class="res-popover-wrap">
+          <div class="res-bar-header"><span>MEM</span><span>32 GiB</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg seg--on-amber"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">74% — 23.7 GiB used</div>
+          <div class="res-popover">
+            <div class="res-popover__title">Memory — hv01</div>
+            <div class="res-popover__total">
+              <span class="res-popover__total-label">Total</span>
+              <span class="res-popover__total-val">32 GiB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">immich</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:48%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">15.4 GiB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">minecraft-public</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:19%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">6.1 GiB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">minecraft-local1</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:7%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">2.2 GiB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">system</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:5%; background:rgb(40,75,59);"></div></div>
+              <span class="res-popover__row-val">1.6 GiB</span>
+            </div>
+            <div class="res-popover__footer">
+              <span>available: 8.3 GiB</span>
+              <span style="color: rgb(73,212,155);">▲ 0.4 GiB/h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CPU popover -->
+        <div class="res-popover-wrap">
+          <div class="res-bar-header"><span>CPU</span><span>8C / 12T</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg seg--on-green"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">34% avg utilization</div>
+          <div class="res-popover">
+            <div class="res-popover__title">CPU — hv01</div>
+            <div class="res-popover__total">
+              <span class="res-popover__total-label">Ryzen 5600x @ 5.1GHz</span>
+              <span class="res-popover__total-val">34%</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">minecraft-public</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:58%; background:rgb(245,93,60);"></div></div>
+              <span class="res-popover__row-val res-popover__row-val--warn">22%</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">immich</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:26%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">9%</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">system</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:8%; background:rgb(40,75,59);"></div></div>
+              <span class="res-popover__row-val">3%</span>
+            </div>
+            <div class="res-popover__footer">
+              <span>idle: 66%</span>
+              <span>temp: 45°C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STORAGE popover -->
+        <div class="res-popover-wrap">
+          <div class="res-bar-header"><span>STORAGE</span><span>12 TB</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg seg--on-red"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: rgb(226,92,117);">91% — critical</div>
+          <div class="res-popover">
+            <div class="res-popover__title">Storage — hv01</div>
+            <div class="res-popover__total">
+              <span class="res-popover__total-label">Total</span>
+              <span class="res-popover__total-val res-popover__total-val" style="color:rgb(226,92,117);">10.9 / 12 TB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">immich-photos</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:62%; background:rgb(226,92,117);"></div></div>
+              <span class="res-popover__row-val res-popover__row-val--error">6.8 TB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">minecraft-world</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:20%; background:rgb(245,93,60);"></div></div>
+              <span class="res-popover__row-val res-popover__row-val--warn">2.2 TB</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">system</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:17%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">1.9 TB</span>
+            </div>
+            <div class="res-popover__footer">
+              <span style="color:rgb(226,92,117);">⚠ free: 1.1 TB</span>
+              <span>▲ 120 GB/day</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NET popover -->
+        <div class="res-popover-wrap">
+          <div class="res-bar-header"><span>NET</span><span>2.5GbE</span></div>
+          <div class="res-bar-track"><div class="seg seg--on-cyan"></div><div class="seg seg--on-cyan"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+          <div style="font-size:10px; color: var(--text-muted);">298 Mb/s</div>
+          <div class="res-popover">
+            <div class="res-popover__title">Network — hv01</div>
+            <div class="res-popover__total">
+              <span class="res-popover__total-label">eth0 — 2.5GbE</span>
+              <span class="res-popover__total-val">298 Mb/s</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">↓ ingress</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:45%; background:rgb(58,184,240);"></div></div>
+              <span class="res-popover__row-val">134 Mb/s</span>
+            </div>
+            <div class="res-popover__row">
+              <span class="res-popover__row-name">↑ egress</span>
+              <div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:55%; background:rgb(73,212,155);"></div></div>
+              <span class="res-popover__row-val">164 Mb/s</span>
+            </div>
+            <div class="res-popover__footer">
+              <span>rx: 1.2 TB total</span>
+              <span>tx: 890 GB total</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">RAM Stick Indicators — DIMM slot visualization</div>
+      <div class="ds-col" style="gap: 12px;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">2×16 GiB active<br>low usage</div>
+          <div class="ram-sticks">
+            <div class="ram-stick ram-stick--active"></div>
+            <div class="ram-stick ram-stick--active"></div>
+            <div class="ram-stick"></div>
+            <div class="ram-stick"></div>
+          </div>
+          <span style="font-size:11px; color:var(--text-secondary);">32 GiB</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">4×16 GiB active<br>high usage</div>
+          <div class="ram-sticks">
+            <div class="ram-stick ram-stick--warn"></div>
+            <div class="ram-stick ram-stick--warn"></div>
+            <div class="ram-stick ram-stick--active"></div>
+            <div class="ram-stick ram-stick--active"></div>
+          </div>
+          <span style="font-size:11px; color:rgb(245,93,60);">64 GiB</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">4×32 GiB active<br>critical</div>
+          <div class="ram-sticks">
+            <div class="ram-stick ram-stick--error"></div>
+            <div class="ram-stick ram-stick--error"></div>
+            <div class="ram-stick ram-stick--error"></div>
+            <div class="ram-stick ram-stick--error"></div>
+          </div>
+          <span style="font-size:11px; color:rgb(226,92,117);">128 GiB</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">offline node</div>
+          <div class="ram-sticks" style="opacity:0.3;">
+            <div class="ram-stick"></div>
+            <div class="ram-stick"></div>
+            <div class="ram-stick"></div>
+            <div class="ram-stick"></div>
+          </div>
+          <span style="font-size:11px; color:var(--text-muted);">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Disk Array Cylinders — per-drive fill + hover detail</div>
+      <div class="ds-col" style="gap: 16px; padding-bottom: 80px;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">4× HDD healthy</div>
+          <div class="res-popover-wrap" style="min-width:0;">
+            <div class="disk-array">
+              <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:55%; background:rgb(73,212,155);"></div></div></div>
+              <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:60%; background:rgb(73,212,155);"></div></div></div>
+              <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:50%; background:rgb(73,212,155);"></div></div></div>
+              <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:45%; background:rgb(73,212,155);"></div></div></div>
+            </div>
+            <div class="res-popover" style="bottom: calc(100% + 12px);">
+              <div class="res-popover__title">Storage Array — hv01</div>
+              <div class="res-popover__total"><span class="res-popover__total-label">4× 4TB — RAID 6</span><span class="res-popover__total-val">6.4 / 12 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sda</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:55%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.2 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdb</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:60%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.4 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdc</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:50%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.0 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdd</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:45%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">1.8 TB</span></div>
+              <div class="res-popover__footer"><span>free: 5.6 TB</span><span style="color:rgb(73,212,155);">RAID healthy</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">4× HDD critical</div>
+          <div class="res-popover-wrap" style="min-width:0;">
+            <div class="disk-array">
+              <div class="disk-cyl disk-cyl--error"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:91%; background:rgb(226,92,117);"></div></div></div>
+              <div class="disk-cyl disk-cyl--error"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:88%; background:rgb(226,92,117);"></div></div></div>
+              <div class="disk-cyl disk-cyl--warn"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:85%; background:rgb(245,93,60);"></div></div></div>
+              <div class="disk-cyl disk-cyl--warn"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:92%; background:rgb(245,93,60);"></div></div></div>
+            </div>
+            <div class="res-popover" style="bottom: calc(100% + 12px);">
+              <div class="res-popover__title">Storage Array — death-star</div>
+              <div class="res-popover__total"><span class="res-popover__total-label">4× 4TB — RAID 6</span><span class="res-popover__total-val" style="color:rgb(226,92,117);">12.7 / 14 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sda</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:91%; background:rgb(226,92,117);"></div></div><span class="res-popover__row-val res-popover__row-val--error">3.6 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdb</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:88%; background:rgb(226,92,117);"></div></div><span class="res-popover__row-val res-popover__row-val--error">3.5 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdc</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:85%; background:rgb(245,93,60);"></div></div><span class="res-popover__row-val res-popover__row-val--warn">3.4 TB</span></div>
+              <div class="res-popover__row"><span class="res-popover__row-name">sdd</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:92%; background:rgb(245,93,60);"></div></div><span class="res-popover__row-val res-popover__row-val--warn">3.7 TB</span></div>
+              <div class="res-popover__footer"><span style="color:rgb(226,92,117);">⚠ free: 1.3 TB</span><span>▲ 120 GB/day</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="font-size:10px; color:var(--text-muted); width:100px;">1× failed</div>
+          <div class="disk-array">
+            <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:60%; background:rgb(73,212,155);"></div></div></div>
+            <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:58%; background:rgb(73,212,155);"></div></div></div>
+            <div class="disk-cyl disk-cyl--offline"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"></div></div>
+            <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:55%; background:rgb(73,212,155);"></div></div></div>
+          </div>
+          <span style="font-size:10px; color:rgb(226,92,117);">DEGRADED</span>
+        </div>
+      </div>
+    </div>
+
+      <div class="ds-col" style="gap: 10px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="font-size:10px; color:var(--text-muted); width:80px;">6C active</div>
+          <div class="dot-matrix">
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="font-size:10px; color:var(--text-muted); width:80px;">8C high load</div>
+          <div class="dot-matrix">
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--warn"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="font-size:10px; color:var(--text-muted); width:80px;">8C maxed</div>
+          <div class="dot-matrix">
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+            <div class="dot-matrix__dot dot-matrix__dot--error"></div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: BUTTONS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="buttons">
+    <div class="ds-section-title"><span>07</span>Buttons</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Variants</div>
+      <div class="ds-row">
+        <button class="btn btn--primary">+ NEW</button>
+        <button class="btn btn--outline">Connect Node</button>
+        <button class="btn btn--ghost">Cancel</button>
+        <button class="btn btn--danger">Delete</button>
+        <button class="btn btn--icon">⚙</button>
+        <button class="btn btn--primary btn--disabled" disabled>Deploying…</button>
+      </div>
+    </div>
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Sizes</div>
+      <div class="ds-row" style="align-items: center;">
+        <button class="btn btn--primary btn--sm">+ NEW</button>
+        <button class="btn btn--primary">+ NEW</button>
+        <button class="btn btn--primary btn--lg">+ NEW</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: INPUTS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="inputs">
+    <div class="ds-section-title"><span>08</span>Form Inputs</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Text Inputs</div>
+        <div class="input-wrap">
+          <label class="input-label">NODE NAME</label>
+          <input class="input" placeholder="e.g. hv01" value="" />
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">IP ADDRESS</label>
+          <input class="input" placeholder="10.0.5.2" value="10.0.5.2" />
+          <span class="input-hint">IPv4 or IPv6</span>
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">CONTAINER NAME</label>
+          <input class="input input--error" placeholder="my-app" value="invalid name!" />
+          <span class="input-hint input-hint--error">Container names must be lowercase alphanumeric</span>
+        </div>
+      </div>
+      <div class="ds-col">
+        <div class="ds-example">
+          <div class="ds-example__label">Search / Command Bar</div>
+          <div class="search-bar">
+            <span class="search-bar__icon">⌕</span>
+            <input placeholder="Search cmd palette" />
+            <span class="search-bar__kbd">ctrl</span>
+          </div>
+        </div>
+        <div class="ds-example">
+          <div class="ds-example__label">Select</div>
+          <div class="input-wrap">
+            <label class="input-label">DEPLOYMENT MODE</label>
+            <select class="input" style="cursor:pointer;">
+              <option>Single node</option>
+              <option>Replicated</option>
+              <option>High availability</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: DATA TABLES
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="tables">
+    <div class="ds-section-title"><span>09</span>Data Tables</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Node Table with Inline Metrics</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>NODE</th>
+            <th>STATUS</th>
+            <th>CPU <span class="col-meta">14C 24T</span></th>
+            <th>MEM <span class="col-meta">192 GB</span></th>
+            <th>STORAGE <span class="col-meta">54 TB</span></th>
+            <th>OS VER</th>
+            <th>UPTIME</th>
+            <th>ROLES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-enter">
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <svg width="20" height="17" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/></svg>
+                hv01
+              </div>
+            </td>
+            <td>
+              <div class="badge badge--healthy" style="margin-bottom:4px;"><span class="badge__dot badge__dot--healthy"></span>Healthy 12h</div>
+              <div style="font-size:10px; color:var(--amber-400);">Replication not setup</div>
+            </td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:10px; color:var(--green-400);">6C</span>
+                <div class="dot-matrix">
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--dim"></div>
+                </div>
+                <span style="font-size:10px; color:var(--text-muted);">12T</span>
+              </div>
+            </td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11px;">32 GiB</span>
+                <div class="ram-sticks">
+                  <div class="ram-stick ram-stick--active"></div>
+                  <div class="ram-stick ram-stick--active"></div>
+                  <div class="ram-stick"></div>
+                  <div class="ram-stick"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="res-popover-wrap">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11px;">12TB</span>
+                  <div class="disk-array">
+                    <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:55%; background:rgb(73,212,155);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:62%; background:rgb(73,212,155);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:48%; background:rgb(73,212,155);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--active"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:51%; background:rgb(73,212,155);"></div></div></div>
+                  </div>
+                </div>
+                <div class="res-popover">
+                  <div class="res-popover__title">Storage Array — hv01</div>
+                  <div class="res-popover__total">
+                    <span class="res-popover__total-label">4× 4TB HDD — RAID 6</span>
+                    <span class="res-popover__total-val">6.5 / 12 TB</span>
+                  </div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sda — WD 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:55%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.2 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdb — WD 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:62%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.5 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdc — WD 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:48%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">1.9 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdd — WD 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:51%; background:rgb(73,212,155);"></div></div><span class="res-popover__row-val">2.0 TB</span></div>
+                  <div class="res-popover__footer"><span>free: 5.5 TB</span><span style="color:rgb(73,212,155);">RAID healthy</span></div>
+                </div>
+              </div>
+            </td>
+            <td>2.1</td>
+            <td class="td-muted">12h</td>
+            <td>
+              <div style="display:flex; gap:4px;">
+                <span class="role-chip role-chip--app">APP</span>
+                <span class="role-chip role-chip--rep">REP</span>
+                <span class="role-chip role-chip--tun">TUN</span>
+                <span class="role-chip role-chip--bac">BAC</span>
+              </div>
+            </td>
+          </tr>
+          <tr class="row-enter">
+            <td>
+              <div style="display:flex; align-items:center; gap:8px; opacity:0.45;">
+                <svg width="20" height="17" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(226,92,117)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(180,56,80)" transform="translate(5.413,3.14)"/></svg>
+                hv02
+              </div>
+            </td>
+            <td><div class="badge badge--offline"><span class="badge__dot badge__dot--offline"></span>Offline</div></td>
+            <td class="td-offline">8C &nbsp; 12T</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px; opacity:0.35;">
+                <span style="font-size:11px;">32 GiB</span>
+                <div class="ram-sticks">
+                  <div class="ram-stick"></div>
+                  <div class="ram-stick"></div>
+                  <div class="ram-stick"></div>
+                  <div class="ram-stick"></div>
+                </div>
+              </div>
+            </td>
+            <td class="td-offline">
+              <div class="disk-array" style="opacity:0.3;">
+                <div class="disk-cyl disk-cyl--offline"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"></div></div>
+                <div class="disk-cyl disk-cyl--offline"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"></div></div>
+                <div class="disk-cyl disk-cyl--offline"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"></div></div>
+                <div class="disk-cyl disk-cyl--offline"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"></div></div>
+              </div>
+            </td>
+            <td class="td-offline">—</td>
+            <td class="td-offline">—</td>
+            <td class="td-offline">—</td>
+          </tr>
+          <tr class="row-enter">
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <svg width="22" height="19" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/></svg>
+                death-star
+              </div>
+            </td>
+            <td><div class="badge badge--running"><span class="badge__dot badge__dot--running"></span>Healthy 43m</div></td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:10px; color:var(--text-primary);">8C</span>
+                <div class="dot-matrix">
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                  <div class="dot-matrix__dot dot-matrix__dot--active"></div>
+                </div>
+                <span style="font-size:10px; color:var(--text-muted);">12T</span>
+              </div>
+            </td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11px;">32 GiB</span>
+                <div class="ram-sticks">
+                  <div class="ram-stick ram-stick--warn"></div>
+                  <div class="ram-stick ram-stick--warn"></div>
+                  <div class="ram-stick ram-stick--active"></div>
+                  <div class="ram-stick"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="res-popover-wrap">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11px;">14TB</span>
+                  <div class="disk-array">
+                    <div class="disk-cyl disk-cyl--error"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:91%; background:rgb(226,92,117);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--error"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:88%; background:rgb(226,92,117);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--warn"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:85%; background:rgb(245,93,60);"></div></div></div>
+                    <div class="disk-cyl disk-cyl--warn"><div class="disk-cyl__cap"></div><div class="disk-cyl__body"><div class="disk-cyl__fill" style="height:92%; background:rgb(245,93,60);"></div></div></div>
+                  </div>
+                </div>
+                <div class="res-popover">
+                  <div class="res-popover__title">Storage Array — death-star</div>
+                  <div class="res-popover__total">
+                    <span class="res-popover__total-label">4× 4TB HDD — RAID 6</span>
+                    <span class="res-popover__total-val" style="color:rgb(226,92,117);">12.7 / 14 TB</span>
+                  </div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sda — ST 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:91%; background:rgb(226,92,117);"></div></div><span class="res-popover__row-val res-popover__row-val--error">3.6 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdb — ST 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:88%; background:rgb(226,92,117);"></div></div><span class="res-popover__row-val res-popover__row-val--error">3.5 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdc — ST 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:85%; background:rgb(245,93,60);"></div></div><span class="res-popover__row-val res-popover__row-val--warn">3.4 TB</span></div>
+                  <div class="res-popover__row"><span class="res-popover__row-name">sdd — ST 4TB</span><div class="res-popover__row-bar"><div class="res-popover__row-fill" style="width:92%; background:rgb(245,93,60);"></div></div><span class="res-popover__row-val res-popover__row-val--warn">3.7 TB</span></div>
+                  <div class="res-popover__footer"><span style="color:rgb(226,92,117);">⚠ free: 1.3 TB</span><span>▲ 120 GB/day</span></div>
+                </div>
+              </div>
+            </td>
+            <td>2.1</td>
+            <td class="td-muted">43m</td>
+            <td>
+              <div style="display:flex; gap:4px;">
+                <span class="role-chip role-chip--app">APP</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: PANELS & TABS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="panels">
+    <div class="ds-section-title"><span>10</span>Panels, Cards &amp; Tabs</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Panel with Header</div>
+        <div class="panel">
+          <div class="panel__header">
+            Mesh Nodes
+            <div class="panel__header-actions">
+              <span style="color:var(--green-400); font-size:11px;">3</span>
+              <button class="btn btn--icon btn--sm">⊞</button>
+            </div>
+          </div>
+          <div class="panel__body">
+            <div class="sidebar-item sidebar-item--active">
+              <svg width="20" height="17" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/></svg>
+              <span class="sidebar-item__name">hv01</span>
+              <span class="sidebar-item__status sidebar-item__status--warning">Not Replicating</span>
+            </div>
+            <div class="sidebar-item sidebar-item--offline">
+              <svg width="20" height="17" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(226,92,117)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(180,56,80)" transform="translate(5.413,3.14)"/></svg>
+              <span class="sidebar-item__name">hv02</span>
+              <span class="sidebar-item__status sidebar-item__status--error">Offline</span>
+            </div>
+            <div class="sidebar-item">
+              <svg width="22" height="19" viewBox="0 0 32.974 27.197" fill="none"><path d="M 32.595 9.362 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 16.196 26.978 C 16.365 27.075 16.575 26.954 16.575 26.759 L 16.575 19.195 C 16.575 19.105 16.623 19.021 16.701 18.976 L 32.595 9.8 C 32.764 9.703 32.764 9.46 32.595 9.362 Z" fill="rgb(73,212,155)"/><path d="M 20.504 2.382 L 16.505 0.073 C 16.427 0.028 16.331 0.028 16.253 0.073 L 0.126 9.383 C 0.048 9.429 0 9.512 0 9.602 L 0 17.481 C 0 17.571 0.048 17.655 0.126 17.7 L 4.105 19.997 C 4.274 20.094 4.484 19.973 4.484 19.778 L 4.484 12.214 C 4.484 12.124 4.532 12.041 4.61 11.996 L 20.504 2.819 C 20.673 2.722 20.673 2.479 20.504 2.382 Z" fill="rgb(73,212,155)" transform="translate(5.413,3.14)"/></svg>
+              <span class="sidebar-item__name">death-star</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Tabs</div>
+        <div class="tabs">
+          <div class="tab tab--active">Logs</div>
+          <div class="tab">Terminal</div>
+          <div class="tab">Compose</div>
+          <div class="tab">Other</div>
+        </div>
+        <div style="padding-top: var(--sp-5); font-size:10px; color:var(--text-muted);">Tab content panel area</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: TERMINAL / LOGS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="terminal">
+    <div class="ds-section-title"><span>11</span>Terminal &amp; Log Viewer</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Log Viewer</div>
+        <div class="terminal">
+          <div class="log-line"><span class="log-line__time">10:24:01</span><span class="log-line__level log-line__level--info">INFO</span><span class="log-line__msg">container hv01/immich started successfully</span></div>
+          <div class="log-line"><span class="log-line__time">10:24:03</span><span class="log-line__level log-line__level--info">INFO</span><span class="log-line__msg">listening on :2283</span></div>
+          <div class="log-line"><span class="log-line__time">10:24:08</span><span class="log-line__level log-line__level--warn">WARN</span><span class="log-line__msg">replication target unreachable: hv02</span></div>
+          <div class="log-line"><span class="log-line__time">10:24:11</span><span class="log-line__level log-line__level--error">ERR</span><span class="log-line__msg">cloudflare-ddns: auth token invalid</span></div>
+          <div class="log-line"><span class="log-line__time">10:24:15</span><span class="log-line__level log-line__level--debug">DBG</span><span class="log-line__msg log-line__msg--dim">health check: ok (34ms)</span></div>
+          <div class="log-line"><span class="log-line__time">10:24:22</span><span class="log-line__level log-line__level--info">INFO</span><span class="log-line__msg">minecraft-public: 3 players online</span></div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Terminal</div>
+        <div class="terminal">
+          <div class="log-line"><span class="log-line__msg log-line__msg--dim">floatlab@hv01:~$</span></div>
+          <div class="log-line" style="margin-top:4px;"><span class="log-line__msg">docker compose ps</span></div>
+          <div class="log-line" style="margin-top:6px;"><span class="log-line__msg log-line__msg--dim">NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STATUS &nbsp;&nbsp;&nbsp;PORTS</span></div>
+          <div class="log-line"><span class="log-line__msg" style="color:var(--green-400);">immich &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Up 12h &nbsp;&nbsp;:2283</span></div>
+          <div class="log-line"><span class="log-line__msg" style="color:var(--red-400);">cloudflare-ddns &nbsp;Exited(1)</span></div>
+          <div class="log-line"><span class="log-line__msg" style="color:var(--green-400);">minecraft-public &nbsp;Up 43m &nbsp;&nbsp;:25565</span></div>
+          <div class="terminal-prompt">
+            <span class="terminal-prompt__caret">█</span>
+            <span class="terminal-prompt__text"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: ALERTS / NOTIFICATIONS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="alerts">
+    <div class="ds-section-title"><span>12</span>Alerts &amp; Notifications</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Toast Notifications</div>
+        <div class="ds-col">
+          <div class="toast toast--success">
+            <span class="toast__icon" style="color:var(--green-400);">✓</span>
+            <div class="toast__body">
+              <div class="toast__title">Container deployed</div>
+              <div class="toast__msg">minecraft-public is now running on hv01:25565</div>
+            </div>
+            <span class="toast__time">just now</span>
+          </div>
+          <div class="toast toast--error">
+            <span class="toast__icon" style="color:var(--red-400);">✕</span>
+            <div class="toast__body">
+              <div class="toast__title">Authentication failed</div>
+              <div class="toast__msg">cloudflare-ddns token rejected — update in settings</div>
+            </div>
+            <span class="toast__time">43m ago</span>
+          </div>
+          <div class="toast toast--warning">
+            <span class="toast__icon" style="color:var(--amber-400);">⚠</span>
+            <div class="toast__body">
+              <div class="toast__title">Replication offline</div>
+              <div class="toast__msg">hv02 is unreachable — replication paused</div>
+            </div>
+            <span class="toast__time">12h ago</span>
+          </div>
+          <div class="toast toast--info">
+            <span class="toast__icon" style="color:var(--cyan-400);">ℹ</span>
+            <div class="toast__body">
+              <div class="toast__title">Update available</div>
+              <div class="toast__msg">FloatLab 2.2 is ready to install</div>
+            </div>
+            <span class="toast__time">1d ago</span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Alert Center Feed</div>
+        <div class="ds-col">
+          <div class="alert-item alert-item--unread">
+            <div class="alert-item__indicator"><div class="alert-item__dot" style="background:var(--red-400);"></div></div>
+            <div class="alert-item__body">
+              <div class="alert-item__header">
+                <span class="alert-item__title">hv02 went offline</span>
+                <span class="alert-item__time">12h ago</span>
+              </div>
+              <div class="alert-item__msg">Node hv02 stopped responding. Last seen 10:12:44. Replication halted.</div>
+            </div>
+          </div>
+          <div class="alert-item alert-item--unread">
+            <div class="alert-item__indicator"><div class="alert-item__dot" style="background:var(--red-400);"></div></div>
+            <div class="alert-item__body">
+              <div class="alert-item__header">
+                <span class="alert-item__title">cloudflare-ddns error</span>
+                <span class="alert-item__time">43m ago</span>
+              </div>
+              <div class="alert-item__msg">Container exited with code 1 — authentication failure.</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-item__indicator"><div class="alert-item__dot" style="background:var(--amber-400);"></div></div>
+            <div class="alert-item__body">
+              <div class="alert-item__header">
+                <span class="alert-item__title">death-star storage critical</span>
+                <span class="alert-item__time">2d ago</span>
+              </div>
+              <div class="alert-item__msg">14TB volume at 91% — consider adding storage.</div>
+            </div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-item__indicator"><div class="alert-item__dot" style="background:var(--green-400);"></div></div>
+            <div class="alert-item__body">
+              <div class="alert-item__header">
+                <span class="alert-item__title">minecraft-public deployed</span>
+                <span class="alert-item__time">3d ago</span>
+              </div>
+              <div class="alert-item__msg">Container started on hv01. Version 1.21.4.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-example" style="margin-top: var(--sp-5);">
+      <div class="ds-example__label">Audit Log / Event Stream</div>
+      <div>
+        <div class="audit-row">
+          <span class="audit-row__time">10:24:01</span>
+          <span class="audit-row__actor">system</span>
+          <span class="audit-row__event">started container <em>immich</em> on node <em>hv01</em></span>
+          <span class="audit-row__target">deploy</span>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row__time">10:12:44</span>
+          <span class="audit-row__actor">system</span>
+          <span class="audit-row__event">node <span class="highlight-red">hv02</span> connection lost — marked offline</span>
+          <span class="audit-row__target">health</span>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row__time">09:55:12</span>
+          <span class="audit-row__actor">admin</span>
+          <span class="audit-row__event">updated compose config for <em>minecraft-public</em></span>
+          <span class="audit-row__target">config</span>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row__time">08:30:00</span>
+          <span class="audit-row__actor">system</span>
+          <span class="audit-row__event">storage on <em>death-star</em> exceeded 90% threshold</span>
+          <span class="audit-row__target">alert</span>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row__time">yesterday</span>
+          <span class="audit-row__actor">admin</span>
+          <span class="audit-row__event">added node <em>death-star</em> to mesh</span>
+          <span class="audit-row__target">infra</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: MODALS
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="modals">
+    <div class="ds-section-title"><span>13</span>Modals &amp; Overlays</div>
+    <div class="two-col">
+      <div class="ds-example">
+        <div class="ds-example__label">Deploy Container Modal</div>
+        <div class="modal">
+          <div class="modal__header">
+            <span class="modal__title">Deploy Container</span>
+            <button class="modal__close">✕</button>
+          </div>
+          <div class="modal__body">
+            <div class="input-wrap">
+              <label class="input-label">CONTAINER NAME</label>
+              <input class="input" placeholder="my-app" />
+            </div>
+            <div class="input-wrap">
+              <label class="input-label">TARGET NODE</label>
+              <select class="input">
+                <option>hv01</option>
+                <option>death-star</option>
+              </select>
+            </div>
+            <div class="input-wrap">
+              <label class="input-label">IMAGE</label>
+              <input class="input" placeholder="docker.io/library/nginx:latest" />
+            </div>
+          </div>
+          <div class="modal__footer">
+            <button class="btn btn--ghost">Cancel</button>
+            <button class="btn btn--primary">Deploy</button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-example">
+        <div class="ds-example__label">Command Palette</div>
+        <div class="cmd-palette">
+          <div class="cmd-palette__input-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="cmd-palette__input" placeholder="Search cmd palette" />
+            <span style="font-size:10px; color:var(--text-muted); padding: 1px 5px;">ctrl</span>
+          </div>
+          <div class="cmd-palette__results">
+            <div class="cmd-result cmd-result--active">
+              <span class="cmd-result__icon">▶</span>
+              <span class="cmd-result__label">Restart container</span>
+              <span class="cmd-result__meta">hv01 / immich</span>
+            </div>
+            <div class="cmd-result">
+              <span class="cmd-result__icon">⊞</span>
+              <span class="cmd-result__label">New container</span>
+              <span class="cmd-result__kbd">N</span>
+            </div>
+            <div class="cmd-result">
+              <span class="cmd-result__icon">⌕</span>
+              <span class="cmd-result__label">Search logs</span>
+              <span class="cmd-result__meta">all nodes</span>
+            </div>
+            <div class="cmd-result">
+              <span class="cmd-result__icon">⚙</span>
+              <span class="cmd-result__label">Settings</span>
+              <span class="cmd-result__kbd">⌘,</span>
+            </div>
+            <div class="cmd-result">
+              <span class="cmd-result__icon">⚠</span>
+              <span class="cmd-result__label">View alerts</span>
+              <span class="cmd-result__meta">3 unread</span>
+            </div>
+          </div>
+          <div class="cmd-palette__footer">
+            <span><kbd style="background:transparent; border:none; padding:0; font-size:10px; font-family:var(--font-mono);">↑↓</kbd> navigate</span>
+            <span><kbd style="background:transparent; border:none; padding:0; font-size:10px; font-family:var(--font-mono);">↵</kbd> select</span>
+            <span><kbd style="background:transparent; border:none; padding:0; font-size:10px; font-family:var(--font-mono);">esc</kbd> close</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: MOTION / ANIMATION
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="motion">
+    <div class="ds-section-title"><span>14</span>Motion &amp; Animation</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Motion Tokens</div>
+      <div class="ds-col" style="gap: 6px; font-size:11px; color:var(--text-secondary); margin-bottom: 16px;">
+        <div><span style="color:var(--text-muted); width:160px; display:inline-block;">--dur-fast</span> 80ms — micro feedback (hover, active)</div>
+        <div><span style="color:var(--text-muted); width:160px; display:inline-block;">--dur-mid</span> 160ms — state changes (badge, border)</div>
+        <div><span style="color:var(--text-muted); width:160px; display:inline-block;">--dur-slow</span> 320ms — panel transitions, appear</div>
+        <div><span style="color:var(--text-muted); width:160px; display:inline-block;">--ease-out</span> cubic-bezier(0.16,1,0.3,1) — default</div>
+        <div><span style="color:var(--text-muted); width:160px; display:inline-block;">--ease-in</span> cubic-bezier(0.4,0,1,1) — exits</div>
+      </div>
+      <div class="ds-example__label">Live Demos</div>
+      <div class="motion-demo">
+        <div class="motion-item">
+          <div class="spinner"></div>
+          <span>Spinner<br>0.8s linear</span>
+        </div>
+        <div class="motion-item">
+          <div class="glow-pulse"></div>
+          <span>Status pulse<br>1.8s glow ring</span>
+        </div>
+        <div class="motion-item">
+          <div class="progress-demo" id="seg-progress"><div class="progress-demo__step progress-demo__step--on" id="ps-0"></div><div class="progress-demo__step progress-demo__step--on" id="ps-1"></div><div class="progress-demo__step progress-demo__step--on" id="ps-2"></div><div class="progress-demo__step progress-demo__step--on" id="ps-3"></div><div class="progress-demo__step progress-demo__step--on" id="ps-4"></div><div class="progress-demo__step progress-demo__step--on" id="ps-5"></div><div class="progress-demo__step progress-demo__step--on" id="ps-6"></div><div class="progress-demo__step progress-demo__step--on" id="ps-7"></div><div class="progress-demo__step progress-demo__step--on" id="ps-8"></div><div class="progress-demo__step progress-demo__step--on" id="ps-9"></div><div class="progress-demo__step" id="ps-10"></div><div class="progress-demo__step" id="ps-11"></div><div class="progress-demo__step" id="ps-12"></div><div class="progress-demo__step" id="ps-13"></div><div class="progress-demo__step" id="ps-14"></div></div>
+          <span>Segmented bar<br>terminal step style</span>
+        </div>
+        <div class="motion-item">
+          <div class="scanline-wrap">
+            <div style="font-size:9px; color:var(--text-muted); padding:4px; font-family:var(--font-mono);">scanning…</div>
+          </div>
+          <span>Scan line<br>2s linear</span>
+        </div>
+        <div class="motion-item">
+          <div style="width:120px;">
+            <div class="skeleton" style="width:100%; margin-bottom:4px;"></div>
+            <div class="skeleton" style="width:75%; margin-bottom:4px;"></div>
+            <div class="skeleton" style="width:55%;"></div>
+          </div>
+          <span>Skeleton<br>shimmer 1.5s</span>
+        </div>
+        <div class="motion-item">
+          <div class="badge badge--running"><span class="badge__dot badge__dot--running"></span>Running</div>
+          <span>Dot pulse<br>2s ease-in-out</span>
+        </div>
+        <div class="motion-item">
+          <div style="position:relative; overflow:hidden;">
+            <div class="terminal-prompt">
+              <span class="terminal-prompt__caret">█</span>
+              <span class="terminal-prompt__text" style="font-size:11px; color:var(--text-primary);">hv01</span>
+            </div>
+          </div>
+          <span>Cursor blink<br>1.2s step-end</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION: TOP NAVIGATION
+  ═══════════════════════════════════════════════════ -->
+  <section class="ds-section" id="nav">
+    <div class="ds-section-title"><span>15</span>Navigation</div>
+    <div class="ds-example">
+      <div class="ds-example__label">Top Bar</div>
+      <div class="topbar">
+        <div class="topbar__logo">
+          <svg width="22" height="17" viewBox="0 0 294 232" fill="none">
+            <path d="M119.054 139.969L245.054 67.9691C249.358 65.5097 254.642 65.5097 258.946 67.9691L287.011 84.0061C290.101 85.772 290.101 90.228 287.011 91.9939L161.054 163.969C156.692 166.462 154 171.101 154 176.125V224.073C154 227.605 150.184 229.82 147.118 228.067L119.054 212.031C114.692 209.538 112 204.899 112 199.875V152.125C112 147.101 114.692 142.462 119.054 139.969Z" fill="rgb(73,212,155)"/>
+            <path d="M63.054 107.969L189.054 35.9691C193.358 33.5097 198.642 33.5097 202.946 35.9691L231.011 52.0061C234.101 53.772 234.101 58.228 231.011 59.9939L105.054 131.969C100.692 134.462 98 139.101 98 144.125V192.073C98 195.605 94.1844 197.82 91.1178 196.067L63.0541 180.031C58.692 177.538 56 172.899 56 167.875V120.125C56 115.101 58.692 110.462 63.054 107.969Z" fill="rgb(73,212,155)"/>
+            <path d="M7.05405 75.9691L133.054 3.96911C137.358 1.50965 142.642 1.50965 146.946 3.96911L175.011 20.0061C178.101 21.772 178.101 26.228 175.011 27.9939L49.0541 99.9691C44.692 102.462 42 107.101 42 112.125V160.073C42 163.605 38.1844 165.82 35.1178 164.067L7.05405 148.031C2.692 145.538 0 140.899 0 135.875V88.1245C0 83.1005 2.692 78.4617 7.05405 75.9691Z" fill="rgb(73,212,155)"/>
+          </svg>
+        </div>
+        <div class="topbar__workspace" style="border-color: rgb(21, 50, 44); background-color: rgb(3, 55, 46); color: rgb(255, 255, 255)">
+          Cavslab
+          <span class="topbar__workspace__sep"></span>
+          <svg class="topbar__workspace__caret" width="10" height="6" viewBox="0 0 10 6" fill="none">
+            <path d="M1 1L5 5L9 1" stroke="rgb(9,15,17)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="topbar__center">
+          <div class="search-bar">
+            <span class="search-bar__icon" style="font-size:16px; line-height:1; color:var(--text-muted);">⌕</span>
+            <input placeholder="Search cmd palette" />
+            <span class="search-bar__kbd">ctrl</span>
+          </div>
+        </div>
+        <div class="topbar__right">
+          <div class="topbar__indicator">
+            Info
+            <div class="topbar__indicator__dot"></div>
+          </div>
+          <div style="font-size:11px; color:var(--text-secondary); cursor:pointer;">Stats</div>
+          <button class="topbar__icon-btn">⚙</button>
+          <button class="topbar__icon-btn" style="color:var(--red-400);">🔔</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════ -->
+  <footer style="border-top: 1px solid var(--border-default); padding-top: var(--sp-8); margin-top: var(--sp-12); display:flex; justify-content:space-between; align-items:center; font-size:10px; color:var(--text-muted);">
+    <div>FloatLab Design System v1.0 — Dark Only</div>
+    <div style="color:rgb(73,212,155);">Built for Cavslab</div>
+    <div>IBM Plex Mono + Manrope</div>
+  </footer>
+
+</div>
+
+<script>
+  // Interactive tab switching demo
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      tab.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('tab--active'));
+      tab.classList.add('tab--active');
+    });
+  });
+
+  // Interactive sidebar items
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (item.classList.contains('sidebar-item--offline')) return;
+      item.parentElement.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('sidebar-item--active'));
+      item.classList.add('sidebar-item--active');
+    });
+  });
+
+  // Data table row click
+  document.querySelectorAll('.data-table tbody tr').forEach(row => {
+    row.addEventListener('click', () => {
+      document.querySelectorAll('.data-table tbody tr').forEach(r => r.style.background = '');
+      row.style.background = 'var(--bg-selected)';
+    });
+  });
+
+  // Alert items hover
+  document.querySelectorAll('.alert-item').forEach(item => {
+    item.addEventListener('click', () => {
+      item.classList.remove('alert-item--unread');
+      item.querySelector('.alert-item__dot').style.opacity = '0.3';
+    });
+  });
+
+  // Page nav active state on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.page-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.style.color = '');
+        const link = document.querySelector(`.page-nav a[href="#${entry.target.id}"]`);
+        if (link) link.style.color = 'var(--green-400)';
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Animate segmented progress bar
+  (function() {
+    const steps = document.querySelectorAll('#seg-progress .progress-demo__step');
+    if (!steps.length) return;
+    let filled = 10;
+    let dir = 1;
+    setInterval(() => {
+      filled += dir;
+      if (filled >= 15) dir = -1;
+      if (filled <= 2)  dir = 1;
+      steps.forEach((s, i) => {
+        s.classList.toggle('progress-demo__step--on', i < filled);
+      });
+    }, 180);
+  })();
+
+</script>
+
+</body>
+</html>

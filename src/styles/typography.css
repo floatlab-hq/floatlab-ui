@@ -1,0 +1,48 @@
+/* IBM Plex Mono and Manrope loaded via index.html */
+
+.text-xs    { font-size: 10px; }
+.text-sm    { font-size: 11px; }
+.text-base  { font-size: 13px; }
+.text-md    { font-size: 14px; }
+.text-lg    { font-size: 16px; }
+.text-xl    { font-size: 20px; }
+.text-2xl   { font-size: 24px; }
+
+.font-mono  { font-family: var(--font-mono); }
+.font-brand { font-family: var(--font-brand); }
+
+.font-300 { font-weight: 300; }
+.font-400 { font-weight: 400; }
+.font-500 { font-weight: 500; }
+.font-600 { font-weight: 600; }
+.font-700 { font-weight: 700; }
+
+.tracking-wide    { letter-spacing: 0.04em; }
+.tracking-wider   { letter-spacing: 0.08em; }
+.tracking-widest  { letter-spacing: 0.12em; }
+
+.uppercase { text-transform: uppercase; }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-dim       { color: var(--text-dim); }
+.text-muted     { color: var(--text-muted); }
+.text-disabled  { color: var(--text-disabled); }
+.text-green     { color: var(--green-400); }
+.text-red       { color: var(--red-400); }
+.text-amber     { color: var(--amber-400); }
+.text-cyan      { color: var(--cyan-400); }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.label-upper {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

@@ -2,12 +2,15 @@
 
 A Vue 3 + Vite Progressive Web App for managing FloatLab floating container infrastructure.
 
+## Design Branding
+Review the files in the design-guide directory for branding guidelines. These are not part of the app itself but are used to define the look and feel and to be used as references and samples of the UI throughout the app.
+
 This guide will help you get the app running locally and explains how to contribute changes.
 
 ## Quick start
 
 Prerequisites:
-- Node.js 18+ (20+ recommended)
+- Node.js 24+ 
 - Yarn package manager (Classic or Berry)
 
 If you don’t have Yarn installed and you use Node 18+:

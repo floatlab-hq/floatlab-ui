@@ -1,0 +1,95 @@
+:root {
+  /* BACKGROUNDS */
+  --bg-void:     rgb(9,15,17);
+  --bg-base:     rgb(19,28,27);
+  --bg-panel:    rgb(13,26,27);
+  --bg-elevated: rgb(20,49,44);
+  --bg-hover:    rgb(28,56,50);
+  --bg-selected: rgb(32,64,56);
+
+  /* BORDERS */
+  --border-subtle:  rgb(19,28,27);
+  --border-default: rgb(40,75,59);
+  --border-strong:  rgb(56,96,76);
+  --border-focus:   rgb(73,212,155);
+
+  /* BRAND / PRIMARY GREEN */
+  --green-100: rgb(212,249,235);
+  --green-200: rgb(160,240,210);
+  --green-300: rgb(113,228,182);
+  --green-400: rgb(73,212,155);
+  --green-500: rgb(40,160,115);
+  --green-600: rgb(20,100,72);
+  --green-700: rgb(10,60,44);
+  --green-800: rgb(5,32,24);
+  --green-glow: rgba(12,245,149,0.3);
+
+  /* ERROR / PINK */
+  --red-300: rgb(240,160,175);
+  --red-400: rgb(226,92,117);
+  --red-500: rgb(180,56,80);
+  --red-600: rgb(123,0,23);
+
+  /* WARNING / ORANGE */
+  --amber-300: rgb(255,180,140);
+  --amber-400: rgb(245,93,60);
+  --amber-500: rgb(196,60,32);
+  --amber-600: rgb(140,32,12);
+
+  /* INFO / CYAN */
+  --cyan-300: rgb(136,221,245);
+  --cyan-400: rgb(58,184,240);
+  --cyan-500: rgb(26,139,191);
+  --cyan-600: rgb(13,94,130);
+
+  /* TEXT */
+  --text-primary:   rgb(255,255,255);
+  --text-secondary: rgb(240,240,240);
+  --text-dim:       rgba(240,240,240,0.4);
+  --text-muted:     rgb(40,75,59);
+  --text-disabled:  rgb(40,48,50);
+  --text-inverse:   rgb(9,15,17);
+
+  /* SEMANTIC ALIASES */
+  --color-success: var(--green-400);
+  --color-error:   var(--red-400);
+  --color-warning: var(--amber-400);
+  --color-info:    var(--cyan-400);
+
+  /* TYPOGRAPHY */
+  --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
+  --font-brand: 'Manrope', sans-serif;
+
+  /* SPACING */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-7:  28px;
+  --sp-8:  32px;
+  --sp-9:  40px;
+  --sp-10: 48px;
+  --sp-11: 56px;
+  --sp-12: 64px;
+
+  /* RADIUS */
+  --r-sm: 2px;
+  --r-md: 4px;
+  --r-lg: 6px;
+
+  /* SHADOWS */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
+  --shadow-glow-green: 0 0 12px rgba(73,212,155,0.25);
+  --shadow-glow-red:   0 0 12px rgba(226,92,117,0.2);
+
+  /* MOTION */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:  cubic-bezier(0.4, 0, 1, 1);
+  --dur-fast: 80ms;
+  --dur-mid:  160ms;
+  --dur-slow: 320ms;
+}
