@@ -14,5 +14,13 @@ export default defineConfig(({ mode }) => {
                 "@": fileURLToPath(new URL("./src", import.meta.url)),
             },
         },
+        server: {
+            proxy: {
+                "/api": {
+                    target: env.VITE_API_TARGET ?? "http://localhost:8080",
+                    changeOrigin: true,
+                },
+            },
+        },
     };
 });
