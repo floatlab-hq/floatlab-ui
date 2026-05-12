@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { useLogs } from '@/composables/useLogs'
 import { getStackContainers } from '@/api/config'
 import type { Container } from '@/types/models'

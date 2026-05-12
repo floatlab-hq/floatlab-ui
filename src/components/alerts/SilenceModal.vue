@@ -36,7 +36,7 @@ async function confirm() {
 </script>
 
 <template>
-  <Modal v-if="notificationId" title="Silence Alert" @close="$emit('close')">
+  <Modal :open="!!notificationId" title="Silence Alert" @close="$emit('close')">
     <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
       <p style="font-size:12px;color:var(--text-secondary)">Silence this alert for:</p>
       <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap">

@@ -13,13 +13,6 @@ const ranges: MetricRange[] = ['1h', '6h', '24h', '7d']
 
 const { series } = useMetrics(() => props.nodeId, 'node', () => range.value)
 
-const METRICS = [
-  { label: 'CPU', key: 'cpu', unit: '%', color: 'rgb(73,212,155)' },
-  { label: 'Memory', key: 'mem', unit: '%', color: 'rgb(96,165,250)' },
-  { label: 'Net RX', key: 'net_rx', unit: ' KB/s', color: 'rgb(167,139,250)' },
-  { label: 'Net TX', key: 'net_tx', unit: ' KB/s', color: 'rgb(251,191,36)' },
-]
-
 function seriesFor(key: string) {
   return series.value.find(s => s.label === key)?.points ?? []
 }
@@ -55,7 +48,7 @@ function latestPct(key: string): number {
       </Panel>
       <Panel title="Memory Usage">
         <div style="display:flex;flex-direction:column;gap:var(--sp-3)">
-          <ResBar :value="latestPct('mem')" :label="'Memory'" :value-label="`${(latestPct('mem') * 100).toFixed(0)}%`" color="rgb(96,165,250)" />
+          <ResBar :value="latestPct('mem')" :label="'Memory'" :value-label="`${(latestPct('mem') * 100).toFixed(0)}%`" color="cyan" />
           <MetricSparkline :points="seriesFor('mem')" label="Memory" unit="%" color="rgb(96,165,250)" :height="40" />
         </div>
       </Panel>

@@ -7,7 +7,6 @@ import NodeContainers from '@/components/node/NodeContainers.vue'
 import NodeNetworkInterfaces from '@/components/node/NodeNetworkInterfaces.vue'
 import TabBar from '@/components/shared/TabBar.vue'
 import Skeleton from '@/components/shared/Skeleton.vue'
-import Panel from '@/components/layout/Panel.vue'
 import { ref } from 'vue'
 
 const props = defineProps<{ nodeId: string }>()
