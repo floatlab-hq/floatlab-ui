@@ -14,6 +14,8 @@ const WorkloadLogs = defineAsyncComponent(() => import('@/components/workload/Wo
 const WorkloadCompose = defineAsyncComponent(() => import('@/components/workload/WorkloadCompose.vue'))
 const WorkloadStorage = defineAsyncComponent(() => import('@/components/workload/WorkloadStorage.vue'))
 const WorkloadFailover = defineAsyncComponent(() => import('@/components/workload/WorkloadFailover.vue'))
+const WorkloadMetrics = defineAsyncComponent(() => import('@/components/workload/WorkloadMetrics.vue'))
+const WorkloadNetworking = defineAsyncComponent(() => import('@/components/workload/WorkloadNetworking.vue'))
 
 const { stacks, loading } = useWorkloads()
 const { selectedStack, activeTab, searchQuery, sortKey, sortDir, selectStack, setTab, setSearch, setSort } = useUrlState()
@@ -33,9 +35,11 @@ const filtered = computed(() => {
 
 const detailTabs = [
   { id: 'status', label: 'Status' },
+  { id: 'metrics', label: 'Metrics' },
   { id: 'logs', label: 'Logs' },
   { id: 'compose', label: 'Compose' },
   { id: 'storage', label: 'Storage' },
+  { id: 'networking', label: 'Networking' },
   { id: 'failover', label: 'Failover' },
 ]
 
@@ -129,9 +133,11 @@ function stateToStatus(state: string): string {
           </div>
         </div>
 
+        <WorkloadMetrics v-else-if="activeTab === 'metrics'" :stack-id="selectedStack" />
         <WorkloadLogs v-else-if="activeTab === 'logs'" :stack-id="selectedStack" />
         <WorkloadCompose v-else-if="activeTab === 'compose'" :stack="stack" />
         <WorkloadStorage v-else-if="activeTab === 'storage'" :stack-id="selectedStack" />
+        <WorkloadNetworking v-else-if="activeTab === 'networking'" :stack-id="selectedStack" />
         <WorkloadFailover v-else-if="activeTab === 'failover'" :stack="stack" />
       </div>
     </div>

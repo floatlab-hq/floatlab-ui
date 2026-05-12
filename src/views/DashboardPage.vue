@@ -6,6 +6,8 @@ import { useAlerts } from '@/composables/useAlerts'
 import Panel from '@/components/layout/Panel.vue'
 import StatusBadge from '@/components/instrument/StatusBadge.vue'
 import NodeIsoIcon from '@/components/instrument/NodeIsoIcon.vue'
+import ReplicationSummary from '@/components/dashboard/ReplicationSummary.vue'
+import AuditLogTail from '@/components/dashboard/AuditLogTail.vue'
 import Skeleton from '@/components/shared/Skeleton.vue'
 import { useRouter } from 'vue-router'
 
@@ -17,10 +19,17 @@ const router = useRouter()
 const running = computed(() => stacks.value.filter(s => s.state === 'RunningPrimary' || s.state === 'RunningBackup').length)
 const faulted = computed(() => stacks.value.filter(s => s.state === 'Failed' || s.state === 'FailingOver').length)
 const unread = computed(() => notifications.value.filter(n => n.state === 'unread').length)
+
+function stateStatus(state: string): string {
+  if (state === 'RunningPrimary' || state === 'RunningBackup') return 'running'
+  if (state === 'Failed') return 'error'
+  return 'pending'
+}
 </script>
 
 <template>
-  <div style="padding:var(--sp-6);display:flex;flex-direction:column;gap:var(--sp-6);overflow-y:auto;height:100%">
+  <div style="padding:var(--sp-6);display:flex;flex-direction:column;gap:var(--sp-5);overflow-y:auto;height:100%">
+    <!-- Summary strip -->
     <div style="display:flex;gap:var(--sp-4)">
       <Panel title="Workloads" style="flex:1">
         <Skeleton v-if="stacksLoading" :rows="2" />
@@ -63,6 +72,7 @@ const unread = computed(() => notifications.value.filter(n => n.state === 'unrea
       </Panel>
     </div>
 
+    <!-- Workloads table -->
     <Panel title="Workloads">
       <table class="data-table">
         <thead>
@@ -77,15 +87,11 @@ const unread = computed(() => notifications.value.filter(n => n.state === 'unrea
           <tr
             v-for="stack in stacks.slice(0, 8)"
             :key="stack.id"
+            style="cursor:pointer"
             @click="router.push(`/workloads?stack=${stack.id}`)"
           >
             <td>{{ stack.name }}</td>
-            <td>
-              <StatusBadge
-                :status="stack.state === 'RunningPrimary' ? 'running' : stack.state === 'Failed' ? 'error' : 'pending'"
-                :label="stack.state"
-              />
-            </td>
+            <td><StatusBadge :status="stateStatus(stack.state)" :label="stack.state" /></td>
             <td class="td-muted">{{ stack.primary_node }}</td>
             <td class="td-muted">{{ stack.secondary_node || '—' }}</td>
           </tr>
@@ -95,5 +101,15 @@ const unread = computed(() => notifications.value.filter(n => n.state === 'unrea
         </tbody>
       </table>
     </Panel>
+
+    <!-- Replication + Audit -->
+    <div class="two-col">
+      <Panel title="Replication">
+        <ReplicationSummary />
+      </Panel>
+      <Panel title="Audit Log">
+        <AuditLogTail />
+      </Panel>
+    </div>
   </div>
 </template>

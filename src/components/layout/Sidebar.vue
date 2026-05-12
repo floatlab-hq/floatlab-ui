@@ -7,6 +7,7 @@ const route = useRoute()
 const navItems = [
   { label: 'Dashboard', path: '/', icon: '◈' },
   { label: 'Workloads', path: '/workloads', icon: '▦' },
+  { label: 'Nodes', path: '/nodes', icon: '◉' },
   { label: 'Alerts', path: '/alerts', icon: '◬' },
   { label: 'Settings', path: '/settings', icon: '⚙' },
 ]
