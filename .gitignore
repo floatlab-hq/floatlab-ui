@@ -1,2 +1,7 @@
-dist/
 node_modules/
+dist/
+.histoire/
+coverage/
+.idea/
+.histoire/
+storybook-static/
