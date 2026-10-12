@@ -1,0 +1,8 @@
+import{_ as a}from"./UiButton-BFtT1Y4_.js";import"./iframe-YqxpCQlV.js";import"./preload-helper-DtJ2DzBH.js";const u={title:"1. Primitive/UI Button",component:a,args:{variant:"primary",size:"default",disabled:!1},argTypes:{variant:{control:"select",options:["default","plain","primary","outline","ghost","surface"]},size:{control:"select",options:["default","small"]},disabled:{control:"boolean"}},render:i=>({components:{UiButton:a},setup:()=>({args:i}),template:'<UiButton v-bind="args">Save changes</UiButton>'})},t={},n={render:()=>({components:{UiButton:a},template:'<div class="foundation-row"><UiButton variant="surface">Surface</UiButton><UiButton>Default</UiButton><UiButton variant="plain">Plain</UiButton><UiButton variant="primary">Primary</UiButton><UiButton variant="outline">Outline</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="outline" size="small">Small</UiButton><UiButton disabled>Disabled</UiButton></div>'})},s=["Playground","Variants"];t.parameters={...t.parameters,docs:{...t.parameters?.docs,source:{originalSource:"{}",...t.parameters?.docs?.source}}};n.parameters={...n.parameters,docs:{...n.parameters?.docs,source:{originalSource:`{
+  render: () => ({
+    components: {
+      UiButton
+    },
+    template: \`<div class="foundation-row"><UiButton variant="surface">Surface</UiButton><UiButton>Default</UiButton><UiButton variant="plain">Plain</UiButton><UiButton variant="primary">Primary</UiButton><UiButton variant="outline">Outline</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="outline" size="small">Small</UiButton><UiButton disabled>Disabled</UiButton></div>\`
+  })
+}`,...n.parameters?.docs?.source}}};export{t as Playground,n as Variants,s as __namedExportsOrder,u as default};

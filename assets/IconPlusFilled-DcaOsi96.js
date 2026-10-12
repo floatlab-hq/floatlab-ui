@@ -1,0 +1,1 @@
+import{c as l}from"./createVueComponent-ByYTr702.js";var e=l("filled","plus-filled","PlusFilled",[["path",{d:"M12 4a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1 -2 0v-6h-6a1 1 0 0 1 0 -2h6v-6a1 1 0 0 1 1 -1",key:"svg-0"}]]);export{e as I};

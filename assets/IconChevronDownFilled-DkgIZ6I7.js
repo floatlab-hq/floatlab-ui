@@ -1,0 +1,1 @@
+import{c as e}from"./createVueComponent-ByYTr702.js";var o=e("filled","chevron-down-filled","ChevronDownFilled",[["path",{d:"M18.707 8.293a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1 -1.414 0l-6 -6a1 1 0 0 1 1.414 -1.414l5.293 5.293l5.293 -5.293a1 1 0 0 1 1.414 0",key:"svg-0"}]]);export{o as I};
